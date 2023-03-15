@@ -1,0 +1,8 @@
+---
+- name: run nodejs template
+  hosts: nodejs_server
+  become: true
+  roles:
+    - ansible-role-git
+    - ansible-role-nodejs
+    - execute-ci-template
