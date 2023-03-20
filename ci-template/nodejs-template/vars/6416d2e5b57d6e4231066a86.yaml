@@ -1,0 +1,7 @@
+repo_url: https://github.com/thuongph/sample-nodejs-with-tests
+local_dir: /home/vagrant/node-server/
+custom_stages:
+  - name: 'stage 1'
+    jobs:
+      - name: 'job 1.1'
+        cmd: 'command 1.1'

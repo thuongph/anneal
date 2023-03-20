@@ -1,0 +1,30 @@
+---
+stages: 
+  - name: 'dependencies'
+    jobs:
+      - name: 'clean install'
+        cmd: 'npm ci --ignore-scripts'
+      - name: 'check vulnerable dependencies'
+        cmd: 'npm audit'
+      - name: 'check coding style'
+        cmd: 'npm run lint'
+  - name: 'unit tests'
+    jobs:
+      - name: 'unit tests'
+        cmd: 'npm run test'
+  - name: 'compile code'
+    jobs:
+      - name: 'build'
+        cmd: 'npm run build'
+  - name: 'integration-test'
+    jobs:
+      - name: 'integration-test'
+        cmd: 'npm run integration-test'
+  - name: 'docker build'
+    jobs:
+      - name: 'docker build'
+        cmd: 'docker build -t my-server:${GIT_COMMIT_HASH} .'
+  - name: 'docker push'
+    jobs:
+      - name: 'docker push'
+        cmd: 'docker push my-server:${GIT_COMMIT_HASH}'
