@@ -1,6 +1,6 @@
 ---
 - name: run nodejs template
-  hosts: nodejs_server
+  hosts: all
   vars_files:
     - vars/{{ project_id }}.yaml
   become: true

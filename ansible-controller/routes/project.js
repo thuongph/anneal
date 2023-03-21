@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const Project = require('../models/project');
+const Host = require('../models/host');
 const fs = require('fs/promises');
 
 var project_router = express.Router();
@@ -29,6 +30,7 @@ project_router.route('/')
             res.statusCode = 200;
             res.setHeader('Content-Type', 'application/json');
             res.json(project);
+            createInventoryFile(project)
         }, (err) => next(err))
         .catch((err) => next(err));
     }
@@ -44,7 +46,14 @@ project_router.route('/')
               res.statusCode = 200;
               res.setHeader('Content-Type', 'application/json');
               res.json(project);
-              convertParam(project);
+              // convertParam(project);
+              Promise.all([convertParam(project), createInventoryFile(project)])
+                .then((values) => {
+                  console.log('--------------------------- sync project success');
+                })
+                .catch((err) => {
+                  console.log('--------------------------- sync project error');
+                })
           }, (err) => next(err))
           .catch((err) => next(err));
       }
@@ -80,6 +89,14 @@ project_router.route('/:projectId')
             res.statusCode = 200;
             res.setHeader('Content-Type', 'application/json');
             res.json(project);
+            // convertParam(project);
+            Promise.all([convertParam(project), createInventoryFile(project)])
+            .then((values) => {
+              console.log('--------------------------- sync project success');
+            })
+            .catch((err) => {
+              console.log('--------------------------- sync project error');
+            })
         }, (err) => next(err))
         .catch((err) => next(err));
   })
@@ -93,8 +110,10 @@ project_router.route('/:projectId')
       .catch((err) => next(err));
   })
 
-const nodejs_template_dir = '/home/teko/anneal/ci-template/nodejs-template/vars/';
+const nodejs_template_vars_dir = '/home/teko/anneal/ci-template/nodejs-template/vars/';
+const nodejs_template_inventory_dir = '/home/teko/anneal/ci-template/nodejs-template/inventory/';
 const ndoejs_local_dir = '/home/vagrant/';
+
 const two_spaces = '  ';
 const four_spaces = two_spaces + two_spaces;
 const six_spaces = two_spaces + four_spaces;
@@ -107,7 +126,7 @@ const convertParam = async (project) => {
     // add repo_url
     ci_info += "repo_url: " + project.repo_url;
     ci_info += '\n' + "local_dir: " + ndoejs_local_dir + project.name;
-    if (!project.ci_circle.use_standard_ci) {
+    if (!project.ci_circle.use_standard_ci && project.ci_circle.stages && project.ci_circle.stages.length > 0) {
             // custom stages
       let custom_ci_stages = "";
       custom_ci_stages += '\n' + 'custom_stages:'
@@ -129,10 +148,24 @@ const convertParam = async (project) => {
       ci_info += custom_ci_stages;
       console.log({ci_info});
     }
-    const project_custom_var_dir = nodejs_template_dir + project._id + ".yaml";
+    const project_custom_var_dir = nodejs_template_vars_dir + project._id + ".yaml";
     await fs.writeFile(project_custom_var_dir, ci_info);
   } catch (err) {
     console.log(err);
+  }
+}
+
+const createInventoryFile = async (project) => {
+  try {
+    const hosts = await Host.find({ inventory: project.inventory });
+    let inventory = "";
+    for (host of hosts) {
+      inventory += host.name + " ansible_host=" + host.host + " ansible_ssh_user=" + host.user_name + " ansible_ssh_private_key_file=" + host.private_key_file + "\n";
+    }
+    const custom_inventory_dir = nodejs_template_inventory_dir + project.inventory + ".txt";
+    await fs.writeFile(custom_inventory_dir, inventory);
+  } catch (err) {
+    console.log(err)
   }
 }
 

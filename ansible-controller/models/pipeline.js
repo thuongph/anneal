@@ -4,50 +4,50 @@ const Schema = mongoose.Schema;
 const author = new Schema({
     name: {
         type: String,
-        require: true,
+        required: true,
     },
     email: {
         type: String,
-        require: true,
+        required: true,
     },
 })
 
 const commit = new Schema({
     id: {
         type: String,
-        require: true,
+        required: true,
     },
     tree_id: {
         type: String,
-        require: true,
+        required: true,
     },
     message: {
         type: String,
-        require: true,
+        required: true,
     },
     url: {
         type: String,
-        require: true,
+        required: true,
     },
     author: {
       type: author,
-      require: true,
+      required: true,
     },
     committer: {
       type: author,
-      require: true,
+      required: true,
     },
     added: {
         type: [String],
-        require: false,
+        required: false,
     },
     removed: {
         type: [String],
-        require: false,
+        required: false,
     },
     modified: {
         type: [String],
-        require: false,
+        required: false,
     },
 }, {
     timestamps: true
@@ -56,11 +56,11 @@ const commit = new Schema({
 const pipeline = new Schema({
     status: {
         type: String,
-        require: require,
+        required: require,
     },
     commits: {
         type: [commit],
-        require: true,
+        required: true,
     },
     head_commit: {
         type: commit,

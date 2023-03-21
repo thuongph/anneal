@@ -71,7 +71,7 @@ pipeline_router.route('/:pipelineId')
 
 const runAnsibleScript = async (pipeline, project) => {
   console.log('---------------------------- run ansible script');
-  var ansible_cmd = 'ANSIBLE_CONFIG=/etc/ansible/ansible.cfg /usr/bin/ansible-playbook -i /home/teko/anneal/ci-template/nodejs-template/inventory.txt /home/teko/anneal/ci-template/nodejs-template/playbook.yaml --extra-vars "use_standard_ci=' + project.ci_circle.use_standard_ci + ' project_id=' + project._id + ' git_commit_head=' + pipeline.head_commit.id + '"';
+  var ansible_cmd = 'ANSIBLE_CONFIG=/etc/ansible/ansible.cfg /usr/bin/ansible-playbook -i  /home/teko/anneal/ci-template/nodejs-template/inventory/' + project.inventory + '.txt /home/teko/anneal/ci-template/nodejs-template/playbook.yaml --extra-vars "use_standard_ci=' + project.ci_circle.use_standard_ci + ' project_id=' + project._id + ' git_commit_head=' + pipeline.head_commit.id + '"';
   await exec(ansible_cmd, (err, stdout, stderr) => {
     console.log('-------------------------- stdout >>', stdout);
     // get number of fail job

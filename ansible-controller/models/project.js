@@ -4,19 +4,19 @@ const Schema = mongoose.Schema;
 const job = new Schema({
     name: {
         type: String,
-        require: true,
+        required: true,
     },
     command: {
         type: String,
-        require: true,
+        required: true,
     },
     tags: {
         type: [String],
-        require: false,
+        required: false,
     },
     status: {
         type: String,
-        require: false,
+        required: false,
     }
 }, {
     timestamps: true
@@ -25,11 +25,11 @@ const job = new Schema({
 const stage = new Schema({
     name: {
         type: String,
-        require: true,
+        required: true,
     },
     jobs: {
         type: [job],
-        require: true,
+        required: true,
     },
 }, {
     timestamps: true
@@ -38,11 +38,11 @@ const stage = new Schema({
 const ci_circle = new Schema({
     type: {
         type: String,
-        require: true,
+        required: true,
     },
     use_standard_ci: {
         type: Boolean,
-        require: true,
+        required: true,
     },
     stages: {
         type: [stage],
@@ -55,21 +55,21 @@ const ci_circle = new Schema({
 const project = new Schema({
     name: {
         type: String,
-        require: true,
+        required: true,
     },
     inventory: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Inventory',
-        require: true,
+        required: true,
     },
     repo_url: {
         type: String,
-        require: true,
+        required: true,
         unique : true,
     },
     ci_circle: {
         type: ci_circle,
-        require: true,
+        required: true,
     }
 }, {
     timestamps: true

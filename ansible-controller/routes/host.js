@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 
 const Host = require('../models/host');
 
-const host_router = express.Router();
+var host_router = express.Router();
 
 host_router.use(bodyParser.json());
 
@@ -75,3 +75,7 @@ host_router.route('/:hostId')
             }, (err) => next(err))
             .catch((err) => next(err));
     });
+
+host_router.route('/:hostId')
+
+module.exports = host_router;

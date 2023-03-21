@@ -2,8 +2,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const Inventory = require('../models/inventory');
+const Host = require('../models/host');
 
-const inventory_router = express.Router();
+var inventory_router = express.Router();
 
 inventory_router.use(bodyParser.json());
 
@@ -20,7 +21,7 @@ inventory_router.route('/')
     .post((req, res, next) => {
         Inventory.create(req.body)
             .then((inventory) => {
-                console.log('Host Created', host);
+                console.log('inventory created', inventory);
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'application/json');
                 res.json(inventory);
@@ -75,3 +76,16 @@ inventory_router.route('/:inventoryId')
             }, (err) => next(err))
             .catch((err) => next(err));
     });
+
+inventory_router.route('/:inventoryId/hosts')
+    .get((req, res, next) => {
+        Host.find({ inventory: req.params.inventoryId})
+            .then((hosts) => {
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.json(hosts);
+            }, (err) => next(err))
+            .catch((err) => next(err));
+    })
+
+module.exports = inventory_router;

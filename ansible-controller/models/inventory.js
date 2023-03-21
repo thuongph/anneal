@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const inventory = new Schema({
     name: {
         type: String,
-        require: true,
+        required: true,
     },
 }, {
     timestamps: true

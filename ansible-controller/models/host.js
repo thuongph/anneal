@@ -4,24 +4,23 @@ const Schema = mongoose.Schema;
 const host = new Schema({
     name: {
         type: String,
-        require: true,
+        required: true,
     },
     host: {
         type: String,
-        require: true,
+        required: true,
     },
     user_name: {
         type: String,
-        require: true,
+        required: true,
     },
     private_key_file: {
         type: String,
-        require: true,
+        required: true,
     },
     inventory: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Inventory',
-        require: true,
     }
 }, {
     timestamps: true

@@ -1,5 +1,4 @@
 const express = require('express');
-const router = require('./routes/index');
 const project_router = require('./routes/project');
 const pipeline_router = require('./routes/pipeline');
 const host_router = require('./routes/host');
@@ -15,10 +14,10 @@ connect.then((db) => {
   console.log('connected correctly to server');
 }, (err) => { console.log(err); });
 
-app.use('/project', project_router);
-app.use('/pipeline', pipeline_router);
-app.use('/host', host_router);
-app.use('/inventory', inventory_router);
+app.use('/projects', project_router);
+app.use('/pipelines', pipeline_router);
+app.use('/hosts', host_router);
+app.use('/inventories', inventory_router);
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
