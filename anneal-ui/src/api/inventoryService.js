@@ -1,8 +1,8 @@
 import { Api } from './api';
 import { baseUrl } from './config'
 
-const inventory_endpoint = '/inventory'
-const api = new Api({baseUrl: baseUrl})
+const inventory_endpoint = '/inventories'
+const api = new Api({baseUrl: baseUrl}).setHeader('Content-Type', 'application/json')
 
 export const getInventories = async () => {
     const inventories = await api.get(inventory_endpoint);

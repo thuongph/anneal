@@ -1,8 +1,8 @@
 import { Api } from './api';
 import { baseUrl } from './config'
 
-const project_endpoint = '/host'
-const api = new Api({baseUrl: baseUrl})
+const project_endpoint = '/projects'
+const api = new Api({baseUrl: baseUrl}).setHeader('Content-Type', 'application/json')
 
 export const getProjects = async () => {
     const projects = await api.get(project_endpoint);

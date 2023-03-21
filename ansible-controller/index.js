@@ -5,9 +5,22 @@ const host_router = require('./routes/host');
 const inventory_router = require('./routes/inventory');
 const config = require('./config');
 const mongoose = require('mongoose');
+const cors = require('cors');
+
+const whiteList = ['http://localhost:3000'];
+const _corsWithOptions = cors((req, callback) => {
+  var corsOptions;
+  if (whiteList.indexOf(req.header('Origin')) !== -1) {
+      corsOptions = { origin: true, credentials: true };
+  } else {
+      corsOptions = { origin: false };
+  }
+  callback(null, corsOptions);
+});
 
 const connect = mongoose.connect(config.mongoUrl);
 const app = express();
+app.use(_corsWithOptions);
 const port = 3001;
 
 connect.then((db) => {

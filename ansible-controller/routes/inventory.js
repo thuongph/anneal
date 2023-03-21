@@ -8,13 +8,30 @@ var inventory_router = express.Router();
 
 inventory_router.use(bodyParser.json());
 
+const getHostsByInventories = async (inventories) => {
+    var result = [];
+    for (const inventory of inventories) {
+        const hosts = await Host.find({_id: {
+            $in: inventory.hosts
+        }});
+        result.push({_id: inventory._id, name: inventory.name , hosts: hosts});
+    }
+    return result;
+}
+
 inventory_router.route('/')
     .get((req, res, next) => {
         Inventory.find({})
-            .then((inventories) => {
-                res.statusCode = 200;
-                res.setHeader('Content-Type', 'application/json');
-                res.json(inventories);
+            .then(async (inventories) => {
+                if (!inventories.length) {
+                    res.statusCode = 404;
+                    res.setHeader('Content-Type', 'application/json');
+                } else {
+                    const result = await getHostsByInventories(inventories);
+                    res.statusCode = 200;
+                    res.setHeader('Content-Type', 'application/json');
+                    res.json(result);
+                }
             }, (err) => next(err))
             .catch((err) => next(err));
     })

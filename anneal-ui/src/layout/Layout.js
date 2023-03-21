@@ -49,7 +49,7 @@ const Layout = () => {
     }
     return (
         <AntLayout>
-            <Header style={{background: '#B4E4FF'}}>Header</Header>
+            <Header style={{background: '#B4E4FF'}}>Anneal</Header>
             <AntLayout style={{height: 'cacl(100vh - 64px)'}}>
                 <Sider style={{background: '#fff'}}>
                     <Menu

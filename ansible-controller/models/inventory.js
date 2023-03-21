@@ -6,6 +6,10 @@ const inventory = new Schema({
         type: String,
         required: true,
     },
+    hosts: {
+        type: [mongoose.Schema.Types.ObjectId],
+        required: true,
+    }
 }, {
     timestamps: true
 })

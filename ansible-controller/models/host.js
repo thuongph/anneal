@@ -5,10 +5,12 @@ const host = new Schema({
     name: {
         type: String,
         required: true,
+        unique : true,
     },
     host: {
         type: String,
         required: true,
+        unique : true,
     },
     user_name: {
         type: String,
@@ -17,10 +19,6 @@ const host = new Schema({
     private_key_file: {
         type: String,
         required: true,
-    },
-    inventory: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Inventory',
     }
 }, {
     timestamps: true

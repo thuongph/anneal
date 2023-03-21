@@ -1,8 +1,8 @@
 import { Api } from './api';
 import { baseUrl } from './config'
 
-const host_endpoint = '/host'
-const api = new Api({baseUrl: baseUrl})
+const host_endpoint = '/hosts'
+const api = new Api({baseUrl: baseUrl}).setHeader('Content-Type', 'application/json')
 
 export const getHosts = async () => {
     const hosts = await api.get(host_endpoint);

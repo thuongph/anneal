@@ -28,8 +28,23 @@ host_router.route('/')
             .catch((err) => next(err));
     })
     .put((req, res, next) => {
-        res.statusCode = 403;
-        res.end('PUT operation not supported');
+        // console.log(req.body)
+        // Host.updateMany({
+        //     name: {
+        //         $in: req.body.hosts
+        //     }
+        // }, {
+        //     $set: {  inventory: req.body.inventoryId }
+        // })
+        // .then((hosts) => {
+        //     res.statusCode = 200;
+        //     res.setHeader('Content-Type', 'application/json');
+        //     console.log({hosts})
+        //     res.json(hosts);
+        // }, (err) => next(err))
+        // .catch((err) => next(err));
+        res.statusCode = 2403;
+        res.setHeader('Content-Type', 'application/json');
     })
     .delete((req, res, next) => {
         Host.remove({})

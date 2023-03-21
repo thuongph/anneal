@@ -1,7 +1,7 @@
 export class Api {
-    constructor(baseUrl, headers) {
-        this._baseURL = baseUrl || "";
-        this._headers = headers || {};
+    constructor(options = {}) {
+        this._baseURL = options.baseUrl || "";
+        this._headers = options.headers || {};
     }
     setHeader(key, value) {
         this._headers[key] = value;
@@ -53,12 +53,13 @@ export class Api {
         )
     }
 
-    async put(endpoint, options = {}) {
+    async put(endpoint, body, options = {}) {
         return await this._fetchJSON(
           endpoint, 
           {
             parseResponse: false,
-            ...options, 
+            ...options,
+            body: JSON.stringify(body), 
             method: 'PUT' 
           }
         )
