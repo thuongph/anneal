@@ -23,6 +23,10 @@ const app = express();
 app.use(_corsWithOptions);
 const port = 3001;
 
+connect.once('open', () =>{
+  gts = new mongoose.mongo.GridFSBucket(connect.db, {bucketName: 'uploads'});
+});
+
 connect.then((db) => {
   console.log('connected correctly to server');
 }, (err) => { console.log(err); });

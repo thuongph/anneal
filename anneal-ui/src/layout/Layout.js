@@ -17,11 +17,11 @@ const menuItems = [
         children: [
             {
                 label: 'Pipelines',
-                key: '/pipeline',
+                key: '/pipelines',
             },
             {
                 label: 'Projects',
-                key: '/project',
+                key: '/projects',
             },
         ],
     },
@@ -32,11 +32,11 @@ const menuItems = [
         children: [
             {
                 label: 'Host',
-                key: '/host',
+                key: '/hosts',
             },
             {
                 label: 'Inventory',
-                key: '/inventory',
+                key: '/inventories',
             },
         ],
     }

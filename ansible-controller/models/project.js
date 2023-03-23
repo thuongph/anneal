@@ -35,23 +35,6 @@ const stage = new Schema({
     timestamps: true
 })
 
-const ci_circle = new Schema({
-    type: {
-        type: String,
-        required: true,
-    },
-    use_standard_ci: {
-        type: Boolean,
-        required: true,
-    },
-    stages: {
-        type: [stage],
-        required: false,
-    }
-}, {
-    timestamps: true
-})
-
 const project = new Schema({
     name: {
         type: String,
@@ -67,9 +50,21 @@ const project = new Schema({
         required: true,
         unique : true,
     },
+    type: {
+        type: String,
+        required: true,
+    },
+    use_standard_ci: {
+        type: Boolean,
+        required: true,
+    },
     ci_circle: {
         type: ci_circle,
         required: true,
+    },
+    stages: {
+        type: [stage],
+        required: false,
     }
 }, {
     timestamps: true

@@ -36,19 +36,20 @@ const commit = new Schema({
     committer: {
       type: author,
       required: true,
+    }
+}, {
+    timestamps: true
+})
+
+const Sender = new Schema({
+    html_url: {
+        type: String,
+        required: true,
     },
-    added: {
-        type: [String],
-        required: false,
-    },
-    removed: {
-        type: [String],
-        required: false,
-    },
-    modified: {
-        type: [String],
-        required: false,
-    },
+    avatar_url: {
+        type: String,
+        required: true,
+    }
 }, {
     timestamps: true
 })
@@ -56,7 +57,7 @@ const commit = new Schema({
 const pipeline = new Schema({
     status: {
         type: String,
-        required: require,
+        required: true,
     },
     commits: {
         type: [commit],
@@ -65,6 +66,10 @@ const pipeline = new Schema({
     head_commit: {
         type: commit,
         required: true,
+    },
+    sender: {
+        type: Sender,
+        required: true
     },
     project: {
         type: mongoose.Schema.Types.ObjectId,
