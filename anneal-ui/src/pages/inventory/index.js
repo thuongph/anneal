@@ -45,7 +45,6 @@ const Inventory = () => {
     const createNewInventory = async (inventory) => {
         try {
             setLoading(true);
-            console.log({inventory})
             const hostsParam = inventory.host.map((host) => hostMap.get(host));
             const newInventory = await createInventory({name: inventory.name, hosts: hostsParam});
             // reload inventories

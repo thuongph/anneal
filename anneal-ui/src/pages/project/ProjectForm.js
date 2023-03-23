@@ -172,6 +172,7 @@ const ProjectForm = () => {
     const [projects, setProjects] = useState(null);
     const [useStandardCI, setUseStandardCI] = useState(true);
     const [inventories, setInventories] = useState(null);
+    const [inventoriesMap, setInventoriesMap] = useState(null);
     const [form] = Form.useForm();
     const { Option } = Select;
     const { Title } = Typography;
@@ -183,6 +184,11 @@ const ProjectForm = () => {
                 setLoading(true);
                 const inventories = await getInventories();
                 setInventories(inventories.map((inventory) => { return {_id: inventory._id, name: inventory.name}}));
+                setInventoriesMap(new Map(
+                    inventories.map(obj => {
+                        return [obj.name, obj._id];
+                    })
+                ));
             } catch (err) {
                 console.log(err);
                 showErrorMessage('Không lấy được thông tin inventories');
@@ -203,8 +209,23 @@ const ProjectForm = () => {
         navigate(-1);
     }
 
-    const onFinish = (values) => {
-        console.log(values);
+    const createNewProject = async (project) => {
+        try {
+            setLoading(true);
+            console.log({project});
+            const newProject = await createProject(project);
+            // reload inventories
+            // navigate to detail
+            navigate(-1);
+        } catch (err) {
+            console.log(err);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const onFinish = async (values) => {
+        await createNewProject({...values, inventory: inventoriesMap.get(values.inventory)});
     }
 
     const handleChangeInventory = (value) => {

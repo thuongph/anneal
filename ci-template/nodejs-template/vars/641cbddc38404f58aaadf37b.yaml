@@ -1,0 +1,23 @@
+repo_url: https://github.com/thuongph/hello-node-app
+local_dir: /home/vagrant/project-2
+custom_stages:
+  - name: 'install dependencies'
+    jobs:
+      - name: 'install'
+        cmd: 'npm install'
+  - name: 'unit test'
+    jobs:
+      - name: 'test'
+        cmd: 'npm run test'
+  - name: 'aggregate test'
+    jobs:
+      - name: 'test'
+        cmd: 'npm run test'
+  - name: 'deploy'
+    jobs:
+      - name: 'deploy'
+        cmd: 'npm deploy'
+  - name: 'another stage'
+    jobs:
+      - name: 'another job'
+        cmd: 'another command'

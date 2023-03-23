@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const Project = require('../models/project');
 const Host = require('../models/host');
+const Inventory = require('../models/inventory');
 const fs = require('fs/promises');
 
 var project_router = express.Router();
@@ -35,8 +36,8 @@ project_router.route('/')
         }, (err) => next(err))
         .catch((err) => next(err));
     }
-    if (!req.body.ci_circle.use_standard_ci){
-      if (!req.body.ci_circle.stages || !req.body.ci_circle.stages.length) {
+    if (!req.body.use_standard_ci){
+      if (!req.body.stages || !req.body.stages.length) {
         res.statusCode = 400;
         res.setHeader('Content-Type', 'application/json');
         res.json({"error": "stages is invalid"});
@@ -127,7 +128,7 @@ const convertParam = async (project) => {
     var ci_info = "";
     // add repo_url
     ci_info += "repo_url: " + project.repo_url;
-    ci_info += '\n' + "local_dir: " + ndoejs_local_dir + project.name;
+    ci_info += '\n' + "local_dir: " + ndoejs_local_dir + project.name.replace(/\s+/g, '');
     if (!project.use_standard_ci && project.stages && project.stages.length > 0) {
             // custom stages
       let custom_ci_stages = "";
@@ -159,13 +160,18 @@ const convertParam = async (project) => {
 
 const createInventoryFile = async (project) => {
   try {
-    const hosts = await Host.find({ inventory: project.inventory });
-    let inventory = "";
+    console.log('--------------------------', project);
+    const inventory = await Inventory.findById(project.inventory);
+    console.log(inventory);
+    const hosts = await Host.find({_id: { $in: inventory.hosts }});
+    console.log(hosts);
+    let inventoryFile = "";
     for (const host of hosts) {
-      inventory += host.name + " ansible_host=" + host.host + " ansible_ssh_user=" + host.user_name + " ansible_ssh_private_key_file=" + host.private_key_file + "\n";
+      inventoryFile += host.name + " ansible_host=" + host.host + " ansible_ssh_user=" + host.user_name + " ansible_ssh_private_key_file=" + host.private_key_file + "\n";
     }
+    console.log(inventoryFile);
     const custom_inventory_dir = nodejs_template_inventory_dir + project.inventory + ".txt";
-    await fs.writeFile(custom_inventory_dir, inventory);
+    await fs.writeFile(custom_inventory_dir, inventoryFile);
   } catch (err) {
     console.log(err)
   }

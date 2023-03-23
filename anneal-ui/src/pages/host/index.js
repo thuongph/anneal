@@ -23,12 +23,7 @@ const columns = [
         title: 'Khóa',
         dataIndex: 'private_key_file',
         key: 'private_key_file',
-    },
-    {
-        title: 'Inventory',
-        dataIndex: 'inventory',
-        key: 'inventory',
-    },      
+    },  
 ];
 
 const formLayout = {
@@ -113,13 +108,28 @@ const Host = () => {
                     style={{ maxWidth: 600 }}
                     id="addHostForm"
                 >
-                    <Form.Item name="name" label="Tên" rules={[{ required: true }]}>
+                    <Form.Item name="name" label="Tên" rules={[{ required: true }, {
+                        validator: (_, value) =>
+                            !value.includes(" ")
+                            ? Promise.resolve()
+                            : Promise.reject(new Error("No spaces allowed"))
+                    }]}>
                         <Input />
                     </Form.Item>
-                    <Form.Item name="host" label="Host" rules={[{ required: true }]}>
+                    <Form.Item name="host" label="Host" rules={[{ required: true }, {
+                        validator: (_, value) =>
+                            !value.includes(" ")
+                            ? Promise.resolve()
+                            : Promise.reject(new Error("No spaces allowed"))
+                    }]}>
                         <Input />
                     </Form.Item>
-                    <Form.Item name="user_name" label="Tên người dùng" rules={[{ required: true }]}>
+                    <Form.Item name="user_name" label="Tên người dùng" rules={[{ required: true }, {
+                        validator: (_, value) =>
+                            !value.includes(" ")
+                            ? Promise.resolve()
+                            : Promise.reject(new Error("No spaces allowed"))
+                    }]}>
                         <Input />
                     </Form.Item>
                     <Form.Item name="private_key_file" label="Khóa" rules={[{ required: true }]}>

@@ -58,10 +58,6 @@ const project = new Schema({
         type: Boolean,
         required: true,
     },
-    ci_circle: {
-        type: ci_circle,
-        required: true,
-    },
     stages: {
         type: [stage],
         required: false,
