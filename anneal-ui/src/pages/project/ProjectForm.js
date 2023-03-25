@@ -69,7 +69,7 @@ const style = {
     alignItems: 'center',
     justifyContent: 'center',
     border: '1px solid #95BDFF'
-  };
+};
 
 const PipelineVisualize = (props) => {
     const { pipeline } = props;
@@ -169,7 +169,6 @@ const JobForm = props => {
 const ProjectForm = () => {
     const [messageApi, contextHolder] = message.useMessage();
     const [isLoading, setLoading] = useState(false);
-    const [projects, setProjects] = useState(null);
     const [useStandardCI, setUseStandardCI] = useState(true);
     const [inventories, setInventories] = useState(null);
     const [inventoriesMap, setInventoriesMap] = useState(null);

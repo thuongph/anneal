@@ -5,16 +5,31 @@
     dest: "{{ local_dir }}"
     version: '{{ git_commit_head }}'
 
-- name: loop
-  ansible.builtin.shell:
-    chdir: "{{ local_dir }}"
-    cmd: "{{ item.1.cmd }}"
-  loop: "{{ stages|subelements('jobs') }}"
-  when: use_standard_ci
+- name: execute pipeline
+  block:
+    - name: loop stage
+      ansible.builtin.shell:
+        chdir: "{{ local_dir }}"
+        cmd: "{{ item.1.cmd }}"
+      loop: "{{ stages|subelements('jobs') }}"
+      register: echo
+      when: use_standard_ci
+  always:
+    - name: record fail
+      become: no
+      delegate_to: localhost
+      copy:
+        content: "{{ echo }}"
+        dest: "{{ log_dir }}"
 
 - name: loop
   ansible.builtin.shell:
     chdir: "{{ local_dir }}"
     cmd: "{{ item.1.cmd }}"
   loop: "{{ custom_stages|subelements('jobs') }}"
+  register: echo
   when: not use_standard_ci
+  ignore_errors: true
+
+- name: log
+  local_action: copy content={{ echo }} dest="{{ log_dir }}"

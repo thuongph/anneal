@@ -23,44 +23,28 @@ project_router.route('/')
   })
   .post((req, res, next) => {
     console.log('------------------------ create a projects')
-    console.log(req.body);
-    if (req.body.use_standard_ci) {
-      req.body.stages = [];
+    
+    if (!req.body.use_standard_ci && (!req.body.stages || !req.body.stages.length)) {
+      res.statusCode = 400;
+      res.setHeader('Content-Type', 'application/json');
+      res.json({"error": "stages is invalid"});
+    } else {
       Project.create(req.body)
-        .then(async (project) => {
+        .then((project) => {
             console.log('------------------------', project);
             res.statusCode = 200;
             res.setHeader('Content-Type', 'application/json');
             res.json(project);
-            await createInventoryFile(project)
+            Promise.all([convertParam(project), createInventoryFile(project)])
+              .then((values) => {
+                console.log('--------------------------- sync project success');
+              })
+              .catch((err) => {
+                console.log('--------------------------- sync project error');
+              })
         }, (err) => next(err))
         .catch((err) => next(err));
     }
-    if (!req.body.use_standard_ci){
-      if (!req.body.stages || !req.body.stages.length) {
-        res.statusCode = 400;
-        res.setHeader('Content-Type', 'application/json');
-        res.json({"error": "stages is invalid"});
-      } else {
-        Project.create(req.body)
-          .then((project) => {
-              console.log('------------------------', project);
-              res.statusCode = 200;
-              res.setHeader('Content-Type', 'application/json');
-              res.json(project);
-              // convertParam(project);
-              Promise.all([convertParam(project), createInventoryFile(project)])
-                .then((values) => {
-                  console.log('--------------------------- sync project success');
-                })
-                .catch((err) => {
-                  console.log('--------------------------- sync project error');
-                })
-          }, (err) => next(err))
-          .catch((err) => next(err));
-      }
-    }
-    
   })
 
 project_router.route('/:projectId')

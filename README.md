@@ -1,0 +1,2 @@
+- start vagrant box
+- start docker redis

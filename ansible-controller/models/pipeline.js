@@ -54,6 +54,23 @@ const Sender = new Schema({
     timestamps: true
 })
 
+const result = new Schema({
+    cmd: {
+        type: String,
+        required: true,
+    },
+    stdout_lines: {
+        type: [String],
+        required: true,
+    },
+    stderr_lines: {
+        type: [String],
+        required: true,
+    }
+}, {
+    timestamps: true
+});
+
 const pipeline = new Schema({
     status: {
         type: String,
@@ -75,6 +92,10 @@ const pipeline = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Project',
         required: true,
+    },
+    result: {
+        type: [result],
+        required: false,
     }
 }, {
     timestamps: true
