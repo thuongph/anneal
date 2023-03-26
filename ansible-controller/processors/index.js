@@ -4,14 +4,38 @@ const Pipeline = require('../models/pipeline');
 const ansibleQueue = new Queue('execute ansible-playbook');
 const fs = require('fs/promises');
 
-const runPipeline = async (pipeline, project) => {
-    var playbook = new Ansible.Playbook()
-        .inventory(`../ci-template/nodejs-template/inventory/${project.inventory}.txt`)
-        .playbook('../ci-template/nodejs-template/playbook')
-        .variables({ use_standard_ci: project.use_standard_ci, project_id: project._id,  git_commit_head: pipeline.head_commit.id, log_dir: `/home/teko/anneal/logs/${pipeline._id}.json`});
+const typeDirMap = {
+    JS: {
+        playbook_dir: '/home/teko/anneal/ci-template/nodejs-template/playbook',
+        inventory_dir: '/home/teko/anneal/ci-template/nodejs-template/inventory/',
+    },
+    Other: {
+        playbook_dir: '/home/teko/anneal/ci-template/any-template/playbook',
+        inventory_dir: '/home/teko/anneal/ci-template/any-template/inventory/',
+    }
+}
 
+const runPipeline = async (pipeline, project) => {
+    console.log('-----------------------');
+    console.log(pipeline);
+    var playbook;
+    if (project.type === 'Khác') {
+    playbook = new Ansible.Playbook()
+        .inventory(`${typeDirMap.Other.inventory_dir}${project.inventory}.txt`)
+        .playbook(typeDirMap.Other.playbook_dir)
+        .variables({ use_standard_ci: project.use_standard_ci, project_id: project._id,  git_commit_head: pipeline.head_commit.id, log_dir: `/home/teko/anneal/logs/${pipeline._id}.json`});
+    }
+    if (project.type === 'JS') {
+    playbook = new Ansible.Playbook()
+        .inventory(`${typeDirMap.JS.inventory_dir}${project.inventory}.txt`)
+        .playbook(typeDirMap.JS.playbook_dir)
+        .variables({ use_standard_ci: project.use_standard_ci, project_id: project._id,  git_commit_head: pipeline.head_commit.id, log_dir: `/home/teko/anneal/logs/${pipeline._id}.json`});
+    }    
+
+    console.log(playbook);
     var promise = playbook.exec();
     promise.then(async function(successResult) {
+        console.log(successResult);
         const result = await getResultPipeline(pipeline._id);
         Pipeline.findByIdAndUpdate(pipeline._id, {status: "pass", result: result}, { new: true })
             .then((pipeline) => {
@@ -19,6 +43,7 @@ const runPipeline = async (pipeline, project) => {
             }, (err) => next(err))
             .catch((err) => next(err));
     }, async function(error) {
+        console.log(error);
         const result = await getResultPipeline(pipeline._id);
         Pipeline.findByIdAndUpdate(pipeline._id, {status: "fail", result: result}, { new: true })
             .then((pipeline) => {

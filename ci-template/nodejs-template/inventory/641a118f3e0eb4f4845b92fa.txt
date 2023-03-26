@@ -1,2 +1,0 @@
-host 1 ansible_host=192.168.56.1 ansible_ssh_user=user name 1 ansible_ssh_private_key_file=/folder/file
-host 2 ansible_host=192.168.56.2 ansible_ssh_user=user name 2 ansible_ssh_private_key_file=/folder/file-2

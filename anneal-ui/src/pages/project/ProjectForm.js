@@ -3,8 +3,7 @@ import { message, Spin, Button, Form, Input, Select, Typography, Checkbox, Row, 
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
-import { createProject } from '../../api/projectService';
-import { getInventories } from '../../api/inventoryService';
+import { useService } from '../../context/ServiceContext';
 
 const formLayout = {
     labelCol: { span: 8 },
@@ -15,7 +14,7 @@ const tailLayout = {
     wrapperCol: { offset: 8, span: 16 },
 };
 
-const STANDARD_PIPELINE = [
+export const STANDARD_PIPELINE = [
     {
         name: 'install dependencies',
         jobs: [
@@ -37,28 +36,10 @@ const STANDARD_PIPELINE = [
                 command: 'npm run test'
             }
         ]
-    },
-    {
-        name: 'aggregate test',
-        jobs: [
-            {
-                name: 'test',
-                command: 'npm run test'
-            }
-        ]
-    },
-    {
-        name: 'deploy',
-        jobs: [
-            {
-                name: 'deploy',
-                command: '',
-            }
-        ]
     }
 ]
 
-const TYPE = ['JS'];
+const TYPE = ['JS', 'Khác'];
 
 const style = {
     background: '#fff',
@@ -71,7 +52,7 @@ const style = {
     border: '1px solid #95BDFF'
 };
 
-const PipelineVisualize = (props) => {
+export const PipelineVisualize = (props) => {
     const { pipeline } = props;
     const { Title, Text } = Typography;
     return (
@@ -172,16 +153,29 @@ const ProjectForm = () => {
     const [useStandardCI, setUseStandardCI] = useState(true);
     const [inventories, setInventories] = useState(null);
     const [inventoriesMap, setInventoriesMap] = useState(null);
+    const [type, setType] = useState(null);
+    const [disabledCheckbox, setDisabledCheckbox] = useState(false);
     const [form] = Form.useForm();
     const { Option } = Select;
     const { Title } = Typography;
     const navigate = useNavigate();
+    const { projectService, inventoryService } = useService();
+
+    useEffect(() => {
+        if (type === 'Khác') {
+            setUseStandardCI(false);
+            setDisabledCheckbox(true);
+        }
+        if (type === 'JS') {
+            setDisabledCheckbox(false);
+        }
+    }, [type])
 
     useEffect(() => {
         const getInventoryList = async () => {
             try {
                 setLoading(true);
-                const inventories = await getInventories();
+                const inventories = await inventoryService.getInventories();
                 setInventories(inventories.map((inventory) => { return {_id: inventory._id, name: inventory.name}}));
                 setInventoriesMap(new Map(
                     inventories.map(obj => {
@@ -212,7 +206,7 @@ const ProjectForm = () => {
         try {
             setLoading(true);
             console.log({project});
-            const newProject = await createProject(project);
+            await projectService.createProject({...project, use_standard_ci: useStandardCI});
             // reload inventories
             // navigate to detail
             navigate(-1);
@@ -235,7 +229,7 @@ const ProjectForm = () => {
         setUseStandardCI(event.target.checked);
     }
     const handleChangeType = (value) => {
-        console.log(value);
+        setType(value);
     }
     return (
         <Spin tip="Loading" size="large" spinning={isLoading}>
@@ -283,8 +277,8 @@ const ProjectForm = () => {
                                     ))}
                                 </Select>
                             </Form.Item>
-                            <Form.Item {...tailLayout} valuePropName="checked" name="use_standard_ci">
-                                <Checkbox checked={useStandardCI} onChange={onChangeUseStandardCI}>Sử dụng pipeline mẫu</Checkbox>
+                            <Form.Item {...tailLayout} name="use_standard_ci">
+                                <Checkbox checked={useStandardCI} disabled={disabledCheckbox} onChange={onChangeUseStandardCI}>Sử dụng pipeline mẫu</Checkbox>
                             </Form.Item>
                         </Col>
                         <Col span={2}></Col>

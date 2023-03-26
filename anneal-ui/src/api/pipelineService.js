@@ -1,15 +1,19 @@
 import { Api } from './api';
 import { baseUrl } from './config'
 
-const pipeline_endpoint = '/pipelines'
-const api = new Api({baseUrl: baseUrl}).setHeader('Content-Type', 'application/json')
+export class PipelineService {
+    constructor(accessToken, endpoint) {
+        this.pipelineApi = new Api({baseUrl: baseUrl}).setHeader('Content-Type', 'application/json').setHeader('Authorization', `Bearer ${accessToken}`)
+        this._endpoint = endpoint;
+    }
 
-export const getPipelines = async () => {
-    const pipelines = await api.get(pipeline_endpoint);
-    return pipelines;
-}
-
-export const getPipelineById = async (pipelineId) => {
-    const pipeline = await api.get(`${pipeline_endpoint}/${pipelineId}`);
-    return pipeline;
+    getPipelines = async () => {
+        const pipelines = await this.pipelineApi.get(this._endpoint);
+        return pipelines;
+    }
+    
+    getPipelineById = async (pipelineId) => {
+        const pipeline = await this.pipelineApi.get(`${this._endpoint}/${pipelineId}`);
+        return pipeline;
+    }
 }

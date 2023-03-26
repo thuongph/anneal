@@ -1,30 +1,35 @@
 import { Api } from './api';
 import { baseUrl } from './config'
 
-const inventory_endpoint = '/inventories'
-const api = new Api({baseUrl: baseUrl}).setHeader('Content-Type', 'application/json')
 
-export const getInventories = async () => {
-    const inventories = await api.get(inventory_endpoint);
-    return inventories;
-}
+export class InventoryService {
+    constructor(accessToken, endpoint) {
+        this.inventoryApi = new Api({baseUrl: baseUrl}).setHeader('Content-Type', 'application/json').setHeader('Authorization', `Bearer ${accessToken}`)
+        this._endpoint = endpoint;
+    }
 
-export const getInventoryById = async (inventoryId) => {
-    const inventory = await api.get(`${inventory_endpoint}/${inventoryId}`);
-    return inventory;
-}
-
-export const createInventory = async (inventory) => {
-    const res = await api.post(inventory_endpoint, inventory);
-    return res;
-}
-
-export const updateInventory = async (inventory) => {
-    const updatedHost = await api.put(`${inventory_endpoint}/${inventory.id}`, inventory);
-    return updatedHost;
-}
-
-export const deleteInventory = async (inventoryId) => {
-    const res = await api.delete(`${inventory_endpoint}/${inventoryId}`);
-    return res;
+    getInventories = async () => {
+        const inventories = await this.inventoryApi.get(this._endpoint);
+        return inventories;
+    }
+    
+    getInventoryById = async (inventoryId) => {
+        const inventory = await this.inventoryApi.get(`${this._endpoint}/${inventoryId}`);
+        return inventory;
+    }
+    
+    createInventory = async (inventory) => {
+        const res = await this.inventoryApi.post(this._endpoint, inventory);
+        return res;
+    }
+    
+    updateInventory = async (inventory) => {
+        const updatedHost = await this.inventoryApi.put(`${this._endpoint}/${inventory.id}`, inventory);
+        return updatedHost;
+    }
+    
+    deleteInventory = async (inventoryId) => {
+        const res = await this.inventoryApi.delete(`${this._endpoint}/${inventoryId}`);
+        return res;
+    }
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Table, message, Spin, Space, Typography, Avatar } from 'antd';
-import { getPipelines } from '../../api/pipelineService';
-import { Link as ReactRouterDomLink} from 'react-router-dom'
+import { Link as ReactRouterDomLink} from 'react-router-dom';
+import { useService } from '../../context/ServiceContext';
 
 export const statusColorMap = {
     fail: '#DC3535',
@@ -21,12 +21,35 @@ export const statusStyle = (status) => {
         fontWeight: '900'
 }};
 
+export const PipelineTable = (props) => {
+    const { pipelines } = props;
+    const { Text, Link } = Typography;
+    const { Column } = Table;
+    return (
+        <Table dataSource={pipelines} style={{width: '64%', marginLeft: 'auto', marginRight: 'auto'}}>
+            <Column align='center' width='20%' title="Trạng thái" dataIndex="status" key="status" render={(_, record) => (
+                <Space key={record._id} style={statusStyle((record.status))}>
+                    {record.status.toUpperCase()}
+                </Space>
+            )} />
+            <Column width='50%' title="Commit" dataIndex="commit" key="commit"render={(_, record) => (
+                <Link href={record.head_commit.url} strong>{record.head_commit.message}</Link>
+            )} /> 
+            <Column align='center' width='30%' title="Tác giả" dataIndex="author" key="author" render={(_, record) => (
+                <a href={record.sender.html_url}><Avatar size={48} src={record.sender.avatar_url} /></a>
+            )} />
+            <Column width='50%' title="Pipeline" dataIndex="pipeline" key="pipeline"render={(_, record) => (
+                <ReactRouterDomLink to={`/pipelines/${record._id}`}><Text underline>Chi tiết</Text></ReactRouterDomLink>
+            )} />
+        </Table>
+    );
+}
+
 const Pipeline = () => {
     const [messageApi, contextHolder] = message.useMessage();
     const [pipelines, setPipelines] = useState();
     const [isLoading, setLoading] = useState(false);
-    const { Column } = Table;
-    const { Text, Link } = Typography;
+    const { pipelineService } = useService();
 
     const showErrorMessage = (err) => {
         messageApi.open({
@@ -39,7 +62,7 @@ const Pipeline = () => {
         const getPipelineList = async () => {
             try {
                 setLoading(true);
-                const pipelines = await getPipelines();
+                const pipelines = await pipelineService.getPipelines();
                 setPipelines(pipelines);
             } catch (err) {
                 console.log(err);
@@ -55,22 +78,7 @@ const Pipeline = () => {
         <Spin tip="Loading" size="large" spinning={isLoading}>
             <div className='content' style={{width: '95%', paddingTop: '16px'}}>
                 {contextHolder}
-                <Table dataSource={pipelines} style={{width: '64%'}}>
-                    <Column align='center' width='20%' title="Trạng thái" dataIndex="status" key="status" render={(_, record) => (
-                        <Space key={record._id} style={statusStyle((record.status))}>
-                            {record.status.toUpperCase()}
-                        </Space>
-                    )} />
-                    <Column width='50%' title="Commit" dataIndex="commit" key="commit"render={(_, record) => (
-                        <Link href={record.head_commit.url} strong>{record.head_commit.message}</Link>
-                    )} /> 
-                    <Column align='center' width='30%' title="Tác giả" dataIndex="author" key="author" render={(_, record) => (
-                        <a href={record.sender.html_url}><Avatar size={48} src={record.sender.avatar_url} /></a>
-                    )} />
-                    <Column width='50%' title="Pipeline" dataIndex="pipeline" key="pipeline"render={(_, record) => (
-                        <ReactRouterDomLink to={`${record._id}`}><Text underline>Chi tiết</Text></ReactRouterDomLink>
-                    )} />
-                </Table>
+                <PipelineTable pipelines={pipelines} />
             </div>
         </Spin>
     )

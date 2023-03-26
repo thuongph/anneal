@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { message, Spin, Typography, Space } from 'antd';
-import { getPipelineById } from '../../api/pipelineService';
 import { useParams } from 'react-router-dom';
 import { statusStyle } from './index';
+import { useService } from '../../context/ServiceContext';
 
 
 const PipelineDetail = () => {
@@ -11,8 +11,7 @@ const PipelineDetail = () => {
     const [messageApi, contextHolder] = message.useMessage();
     const { pipelineId } = useParams();
     const { Title, Text, Paragraph } = Typography;
-
-    console.log({pipelineId});
+    const { pipelineService } = useService();
 
     const showErrorMessage = (err) => {
         messageApi.open({
@@ -25,7 +24,7 @@ const PipelineDetail = () => {
         const getPipeline = async () => {
             try {
                 setLoading(true);
-                const pipeline = await getPipelineById(pipelineId);
+                const pipeline = await pipelineService.getPipelineById(pipelineId);
                 console.log({pipeline});
                 setPipeline(pipeline);
             } catch(err) {

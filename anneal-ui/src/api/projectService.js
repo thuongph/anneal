@@ -1,30 +1,39 @@
 import { Api } from './api';
 import { baseUrl } from './config'
 
-const project_endpoint = '/projects'
-const api = new Api({baseUrl: baseUrl}).setHeader('Content-Type', 'application/json')
+export class ProjectService {
+    constructor(accessToken, endpoint) {
+        this.projectApi = new Api({baseUrl: baseUrl}).setHeader('Content-Type', 'application/json').setHeader('Authorization', `Bearer ${accessToken}`)
+        this._endpoint = endpoint;
+    }
 
-export const getProjects = async () => {
-    const projects = await api.get(project_endpoint);
-    return projects;
-}
-
-export const getProjectById = async (projectId) => {
-    const project = await api.get(`${project_endpoint}/${projectId}`);
-    return project;
-}
-
-export const createProject = async (project) => {
-    const res = await api.post(project_endpoint, project);
-    return res;
-}
-
-export const updateProject = async (project) => {
-    const res = await api.put(`${project_endpoint}/${project.id}`, project);
-    return res;
-}
-
-export const deleteProject = async (projectId) => {
-    const res = await api.delete(`${project_endpoint}/${projectId}`);
-    return res;
+    getProjects = async () => {
+        const projects = await this.projectApi.get(this._endpoint);
+        return projects;
+    }
+    
+    getProjectById = async (projectId) => {
+        const project = await this.projectApi.get(`${this._endpoint}/${projectId}`);
+        return project;
+    }
+    
+    createProject = async (project) => {
+        const res = await this.projectApi.post(this._endpoint, project);
+        return res;
+    }
+    
+    updateProject = async (project) => {
+        const res = await this.projectApi.put(`${this._endpoint}/${project.id}`, project);
+        return res;
+    }
+    
+    deleteProject = async (projectId) => {
+        const res = await this.projectApi.delete(`${this._endpoint}/${projectId}`);
+        return res;
+    }
+    
+    getPipelineByProjectId = async (projectId) => {
+        const pipelines = await this.projectApi.get(`${this._endpoint}/${projectId}/pipelines`);
+        return pipelines;
+    }
 }

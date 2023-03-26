@@ -1,30 +1,34 @@
 import { Api } from './api';
 import { baseUrl } from './config'
 
-const host_endpoint = '/hosts'
-const api = new Api({baseUrl: baseUrl}).setHeader('Content-Type', 'application/json')
+export class HostService {
+    constructor(accessToken, endpoint) {
+        this.hostApi = new Api({baseUrl: baseUrl}).setHeader('Content-Type', 'application/json').setHeader('Authorization', `Bearer ${accessToken}`)
+        this._endpoint = endpoint;
+    }
 
-export const getHosts = async () => {
-    const hosts = await api.get(host_endpoint);
-    return hosts;
-}
-
-export const getHostById = async (hostId) => {
-    const host = await api.get(`${host_endpoint}/${hostId}`);
-    return host;
-}
-
-export const createHost = async (host) => {
-    const newHost = await api.post(host_endpoint, host);
-    return newHost;
-}
-
-export const updateHost = async (host) => {
-    const updatedHost = await api.put(`${host_endpoint}/${host.id}`, host);
-    return updatedHost;
-}
-
-export const deleteHost = async (hostId) => {
-    const res = await api.delete(`${host_endpoint}/${hostId}`);
-    return res;
+    getHosts = async () => {
+        const hosts = await this.hostApi.get(this._endpoint);
+        return hosts;
+    }
+    
+    getHostById = async (hostId) => {
+        const host = await this.hostApi.get(`${this._endpoint}/${hostId}`);
+        return host;
+    }
+    
+    createHost = async (host) => {
+        const newHost = await this.hostApi.post(this._endpoint, host);
+        return newHost;
+    }
+    
+    updateHost = async (host) => {
+        const updatedHost = await this.hostApi.put(`${this._endpoint}/${host.id}`, host);
+        return updatedHost;
+    }
+    
+    deleteHost = async (hostId) => {
+        const res = await this.hostApi.delete(`${this._endpoint}/${hostId}`);
+        return res;
+    }
 }

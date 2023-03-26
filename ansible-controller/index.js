@@ -3,6 +3,7 @@ const project_router = require('./routes/project');
 const pipeline_router = require('./routes/pipeline');
 const host_router = require('./routes/host');
 const inventory_router = require('./routes/inventory');
+const user_router = require('./routes/user');
 const config = require('./config');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -31,6 +32,7 @@ app.use('/projects', project_router);
 app.use('/pipelines', pipeline_router);
 app.use('/hosts', host_router);
 app.use('/inventories', inventory_router);
+app.use('/users', user_router);
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);

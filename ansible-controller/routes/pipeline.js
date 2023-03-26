@@ -3,13 +3,14 @@ const bodyParser = require('body-parser');
 const Pipeline = require('../models/pipeline');
 const Project = require('../models/project');
 const ansibleQueue = require('../processors/index');
+const authenticate = require('./authenticate');
 
 var pipeline_router = express.Router();
 
 pipeline_router.use(bodyParser.json());
 
 pipeline_router.route('/')
-  .get((req, res, next) => {
+  .get(authenticate.verifyUser, (req, res, next) => {
     Pipeline.find({})
       .select('-result -commits')
       .populate('project', 'name repo_url')
@@ -20,7 +21,7 @@ pipeline_router.route('/')
       }, (err) => next(err))
       .catch((err) => next(err));
   })
-  .post((req, res, next) => {
+  .post(authenticate.verifyUser, (req, res, next) => {
     // check whether project is valid
     Project.findOne({repo_url: req.body.repository.html_url})
       .then((project) => {
@@ -46,7 +47,7 @@ pipeline_router.route('/')
   })
 
 pipeline_router.route('/:pipelineId')
-  .get((req, res, next) => {
+  .get(authenticate.verifyUser, (req, res, next) => {
     Pipeline.findById(req.params.pipelineId)
       .populate('project', 'name repo_url')
       .then((pipeline) => {
@@ -56,7 +57,7 @@ pipeline_router.route('/:pipelineId')
       }, (err) => next(err))
       .catch((err) => next(err));
   })
-  .delete((req, res, next) => {
+  .delete(authenticate.verifyUser, (req, res, next) => {
     Pipeline.findByIdAndRemove(req.params.pipelineId)
       .then((resp) => {
         res.statusCode = 200;

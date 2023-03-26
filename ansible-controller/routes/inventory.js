@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-
+const authenticate = require('./authenticate');
 const Inventory = require('../models/inventory');
 const Host = require('../models/host');
 
@@ -20,7 +20,7 @@ const getHostsByInventories = async (inventories) => {
 }
 
 inventory_router.route('/')
-    .get((req, res, next) => {
+    .get(authenticate.verifyUser, (req, res, next) => {
         Inventory.find({})
             .then(async (inventories) => {
                 if (!inventories.length) {
@@ -35,7 +35,7 @@ inventory_router.route('/')
             }, (err) => next(err))
             .catch((err) => next(err));
     })
-    .post((req, res, next) => {
+    .post(authenticate.verifyUser, (req, res, next) => {
         Inventory.create(req.body)
             .then((inventory) => {
                 console.log('inventory created', inventory);
@@ -45,11 +45,11 @@ inventory_router.route('/')
             }, (err) => next(err))
             .catch((err) => next(err));
     })
-    .put((req, res, next) => {
+    .put(authenticate.verifyUser, (req, res, next) => {
         res.statusCode = 403;
         res.end('PUT operation not supported');
     })
-    .delete((req, res, next) => {
+    .delete(authenticate.verifyUser, (req, res, next) => {
         Inventory.remove({})
             .then((resp) => {
                 res.statusCode = 200;
@@ -60,7 +60,7 @@ inventory_router.route('/')
     });
 
 inventory_router.route('/:inventoryId')
-    .get((req, res, next) => {
+    .get(authenticate.verifyUser, (req, res, next) => {
         Inventory.findById(req.params.inventoryId)
             .then((inventory) => {
                 res.statusCode = 200;
@@ -69,11 +69,11 @@ inventory_router.route('/:inventoryId')
             }, (err) => next(err))
             .catch((err) => next(err));
     })
-    .post((req, res, next) => {
+    .post(authenticate.verifyUser, (req, res, next) => {
         res.statusCode = 403;
         res.end('POST operation not supported');
     })
-    .put((req, res, next) => {
+    .put(authenticate.verifyUser, (req, res, next) => {
         Inventory.findByIdAndUpdate(req.params.inventoryId, {
             $set: req.body
         }, { new: true })
@@ -84,7 +84,7 @@ inventory_router.route('/:inventoryId')
             }, (err) => next(err))
             .catch((err) => next(err));
     })
-    .delete((req, res, next) => {
+    .delete(authenticate.verifyUser, (req, res, next) => {
         Inventory.findByIdAndRemove(req.params.inventoryId)
             .then((resp) => {
                 res.statusCode = 200;
@@ -95,7 +95,7 @@ inventory_router.route('/:inventoryId')
     });
 
 inventory_router.route('/:inventoryId/hosts')
-    .get((req, res, next) => {
+    .get(authenticate.verifyUser, (req, res, next) => {
         Host.find({ inventory: req.params.inventoryId})
             .then((hosts) => {
                 res.statusCode = 200;

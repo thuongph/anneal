@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table, message, Spin, Button, Form, Input, Modal, Select, Tag } from 'antd';
-
-import { getInventories, createInventory } from '../../api/inventoryService';
-import { getHosts } from '../../api/hostService';
+import { useService } from '../../context/ServiceContext';
 
 const formLayout = {
     labelCol: { span: 4 },
@@ -33,6 +31,7 @@ const Inventory = () => {
     const [form] = Form.useForm();
     const { Column } = Table;
     const { Option } = Select;
+    const { hostService, inventoryService } = useService()
 
     const [hostMap, setHostMap] = useState(null);
 
@@ -46,9 +45,9 @@ const Inventory = () => {
         try {
             setLoading(true);
             const hostsParam = inventory.host.map((host) => hostMap.get(host));
-            const newInventory = await createInventory({name: inventory.name, hosts: hostsParam});
+            const newInventory = await inventoryService.createInventory({name: inventory.name, hosts: hostsParam});
             // reload inventories
-            const inventories = await getInventories();
+            const inventories = await inventoryService.getInventories();
             setInventories(displayInventories(inventories));
             closeModal();
         } catch (err) {
@@ -66,7 +65,7 @@ const Inventory = () => {
         const getInventoryList = async () => {
             try {
                 setLoading(true);
-                const inventories = await getInventories();
+                const inventories = await inventoryService.getInventories();
                 setInventories(displayInventories(inventories, 'name', '_id'));
             } catch (err) {
                 console.log(err);
@@ -78,7 +77,7 @@ const Inventory = () => {
         const getHostList = async () => {
             try {
                 setLoading(true);
-                const hostList = await getHosts();
+                const hostList = await hostService.getHosts();
                 setHostMap(buildMapFromArray(hostList, 'name', '_id'));
                 setHosts(hostList);
             } catch (err) {

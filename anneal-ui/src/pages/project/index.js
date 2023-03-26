@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Table, message, Spin, Button, Space } from 'antd';
-import { useNavigate } from "react-router-dom";
-
-import { getProjects } from '../../api/projectService';
+import { Table, message, Spin, Button, Space, Modal } from 'antd';
+import { CiCircleTwoTone, DeleteTwoTone } from '@ant-design/icons';
+import { useNavigate, Link } from "react-router-dom";
+import { useService } from '../../context/ServiceContext';
 
 const ProjectTable = () => {
     const [messageApi, contextHolder] = message.useMessage();
     const [isLoading, setLoading] = useState(false);
     const [projects, setProjects] = useState(null);
     const { Column } = Table;
+    const { confirm } = Modal;
     const navigate = useNavigate();
+    const { projectService } = useService();
 
     const showErrorMessage = (err) => {
         messageApi.open({
@@ -22,7 +24,7 @@ const ProjectTable = () => {
         const getProjectList = async () => {
             try {
                 setLoading(true);
-                const projectList = await getProjects();
+                const projectList = await projectService.getProjects();
                 setProjects(projectList.map((project) => { return {...project, inventory: project.inventory.name, use_standard_ci: project.use_standard_ci ? 'yes' : 'no' };}));
             } catch (err) {
                 console.log(err);
@@ -33,6 +35,30 @@ const ProjectTable = () => {
         }
         getProjectList();
     }, []);
+
+    const deleteProjectById = async (id) => {
+        try {
+            setLoading(true);
+            await projectService.deleteProject(id);
+        } catch(err) {
+            console.log(err);
+            showErrorMessage('Có lỗi xảy ra, Vui lòng thử lại')
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const showConfirmDeleteProject = (project) => {
+        confirm({
+            title: `Bạn chắc chắn muốn xóa project ${project.name}?`,
+            onOk() {
+                deleteProjectById(project._id)
+            },
+            onCancel() {
+              console.log('Cancel');
+            },
+        });
+      };
 
     return (
         <Spin tip="Loading" size="large" spinning={isLoading}>
@@ -50,6 +76,13 @@ const ProjectTable = () => {
                     <Column title="Inventory" dataIndex="inventory" key="inventory" />
                     <Column title="stack" dataIndex="type" key="type" />
                     <Column title="Sử dụng CI/CD mặc định" dataIndex="use_standard_ci" key="use_standard_ci" />
+                    <Column title="" dataIndex="action" key="action" render={(_, record) => (
+                        <div style={{display: 'flex', gap: '12px', justifyContent: 'center'}}>
+                            <Link to={`${record._id}`}><CiCircleTwoTone style={{ fontSize: '24px'}} /></Link>
+                            {/* <Button type="primary" icon={<DownloadOutlined />} size={size} /> */}
+                            <DeleteTwoTone onClick={() => showConfirmDeleteProject(record)} style={{ fontSize: '24px'}} twoToneColor="#eb2f96" />
+                        </div>
+                    )} />
                 </Table>
             </div>
         </Spin>

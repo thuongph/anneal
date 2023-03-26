@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table, message, Spin, Button, Form, Input, Modal } from 'antd';
-
-import { getHosts, createHost } from '../../api/hostService';
+import { useService } from '../../context/ServiceContext';
 
 const columns = [
     {
@@ -37,6 +36,7 @@ const Host = () => {
     const [isLoading, setLoading] = useState(false);
     const [openAddForm, setOpenAddForm] = useState(false);
     const [form] = Form.useForm();
+    const { hostService } = useService();
 
     const showErrorMessage = (err) => {
         messageApi.open({
@@ -47,7 +47,7 @@ const Host = () => {
     const createNewHost = async (host) => {
         try {
             setLoading(true);
-            await createHost(host);
+            await hostService.createHost(host);
             closeModal();
             setHosts([...hosts, host])
         } catch (err) {
@@ -65,7 +65,7 @@ const Host = () => {
         const getHostList = async () => {
             try {
                 setLoading(true);
-                const hostList = await getHosts();
+                const hostList = await hostService.getHosts();
                 setHosts(hostList);
             } catch (err) {
                 console.log(err);
