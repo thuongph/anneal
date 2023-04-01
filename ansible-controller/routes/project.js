@@ -118,6 +118,7 @@ project_router.route('/:projectId')
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
         res.json(resp);
+        console.log({resp});
         removeProjectFile(resp);
       }, (err) => next(err))
       .catch((err) => next(err));
@@ -192,15 +193,34 @@ const createInventoryFile = async (project, inventory_dir) => {
   }
 }
 
+// const removeProjectFile = async (project) => {
+//   try {
+//     fs.unlinkSync(`${nodejs_template_vars_dir}${project._id}.yaml`);
+//     fs.unlinkSync(`${any_template_vars_dir}${project._id}.yaml`);
+//     fs.unlinkSync(`${nodejs_template_inventory_dir}${project.inventory}.txt`);
+//     fs.unlinkSync(`${nodejs_template_inventory_dir}${project.inventory}.txt`);
+//   } catch (err) {
+//     console.log(err);
+//   }
+// }
+
+
+
 const removeProjectFile = async (project) => {
+  const filePaths = [
+    `${nodejs_template_vars_dir}${project._id}.yaml`,
+    `${any_template_vars_dir}${project._id}.yaml`,
+    `${nodejs_template_inventory_dir}${project.inventory}.txt`,
+    `${nodejs_template_inventory_dir}${project.inventory}.txt`
+  ]
   try {
-    fs.unlinkSync(`${nodejs_template_vars_dir}${project._id}.yaml`);
-    fs.unlinkSync(`${any_template_vars_dir}${project._id}.yaml`);
-    fs.unlinkSync(`${nodejs_template_inventory_dir}${project.inventory}.txt`);
-    fs.unlinkSync(`${nodejs_template_inventory_dir}${project.inventory}.txt`);
+      const promises = filePaths.map((file) => fs.unlink(file))
+      await Promise.all(promises)
+      console.log('All files deleted successfully')
   } catch (err) {
-    console.log(err);
+      console.error(err)
   }
 }
+
 
 module.exports = project_router;

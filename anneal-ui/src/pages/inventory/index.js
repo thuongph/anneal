@@ -45,7 +45,7 @@ const Inventory = () => {
         try {
             setLoading(true);
             const hostsParam = inventory.host.map((host) => hostMap.get(host));
-            const newInventory = await inventoryService.createInventory({name: inventory.name, hosts: hostsParam});
+            await inventoryService.createInventory({name: inventory.name, hosts: hostsParam});
             // reload inventories
             const inventories = await inventoryService.getInventories();
             setInventories(displayInventories(inventories));
@@ -100,7 +100,7 @@ const Inventory = () => {
             <div className='content' style={{width: '95%', paddingTop: '16px'}}>
                 {contextHolder}
                 <div style={{display: 'flex', float: 'right', padding: '16px 16px 16px 0px'}}>
-                    <Button type="primary" size='large' onClick={() => setOpenAddForm(true)}>Thêm inventory mới</Button>
+                    <Button type="primary" size='large' onClick={() => setOpenAddForm(true)}>Thêm nhóm host mới</Button>
                 </div>
                 <Table dataSource={inventories}>
                     <Column width='30%' title="Tên" dataIndex="name" key="name" />
@@ -121,7 +121,7 @@ const Inventory = () => {
                 </Table>
             </div>
             <Modal
-                title="Thêm mới inventory"
+                title="Thêm mới nhóm host"
                 width={640}
                 open={openAddForm}
                 onCancel={closeModal}

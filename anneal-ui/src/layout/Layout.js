@@ -33,7 +33,7 @@ const menuItems = [
                 key: '/hosts',
             },
             {
-                label: 'Inventory',
+                label: 'Group Host',
                 key: '/inventories',
             },
         ],

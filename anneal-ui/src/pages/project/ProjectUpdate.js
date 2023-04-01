@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { message, Spin, Button, Form, Input, Select, Typography, Checkbox, Row, Col, Space } from 'antd';
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useService } from '../../context/ServiceContext';
+import { useNavigate } from 'react-router-dom';
+import { JobForm, PipelineVisualize, STANDARD_PIPELINE, TYPE } from './ProjectForm';
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 
 const formLayout = {
     labelCol: { span: 8 },
@@ -13,152 +15,32 @@ const tailLayout = {
     wrapperCol: { offset: 8, span: 16 },
 };
 
-export const STANDARD_PIPELINE = [
-    {
-        name: 'install dependencies',
-        jobs: [
-            {
-                name: 'install',
-                command: 'npm install',
-            }
-        ]
-    },
-    {
-        name: 'unit test',
-        jobs: [
-            {
-                name: 'lint',
-                command: 'npm eslint'
-            },
-            {
-                name: 'test',
-                command: 'npm run test'
-            }
-        ]
-    }
-]
-
-export const TYPE = ['JS', 'Khác'];
-
-const style = {
-    background: '#fff',
-    padding: '12px 16px',
-    marginBottom: '16px',
-    borderRadius: '32px',
-    fontSize: '16px',
-    alignItems: 'center',
-    justifyContent: 'center',
-    border: '1px solid #95BDFF'
-};
-
-export const PipelineVisualize = (props) => {
-    const { pipeline } = props;
-    const { Title, Text } = Typography;
-    return (
-        <>
-            <Row style={{margin: '64px'}} gutter={[64, 32]}>
-                {
-                    pipeline.map((stage) => {
-                        return (
-                            <Col className="job-row" span={24/pipeline.length}>
-                                <Title style={{marginBottom: '24px', paddingLeft: '12px'}} level={5}>{stage.name}</Title>
-                                {
-                                    stage.jobs.length && (
-                                        stage.jobs.map((job) => {
-                                            return (
-                                                <Row style={style}>
-                                                    <Text>{job.name + ':    '}<Text code={true}>{job.command}</Text></Text>
-                                                </Row>
-                                            );
-                                        })
-                                    )
-                                }
-                            </Col>
-                        );
-                    })
-                }
-            </Row>
-        </>
-    );
-}
-
-export const JobForm = props => {
-    return (
-      <>
-        <Form.List name={[props.name, "jobs"]}>
-          {(jobs, { add, remove }) => {
-            return (
-              <div>
-                {jobs.map((job) => (
-                  <Space
-                    key={job.name}
-                    style={{ display: "flex", marginBottom: 8 }}
-                    align="start"
-                  >
-                    <Form.Item
-                        {...job}
-                        name={[job.name, 'name']}
-                        key={job.name}
-                        rules={[
-                        {
-                            required: true,
-                            message: 'Missing job name',
-                        },
-                        ]}
-                    >
-                        <Input placeholder="Tên job" />
-                    </Form.Item>
-                    <Form.Item
-                        {...job}
-                        name={[job.name, 'command']}
-                        key={job.name}
-                        rules={[
-                        {
-                            required: true,
-                            message: 'Missing command',
-                        },
-                        ]}
-                    >
-                        <Input placeholder="Command" />
-                    </Form.Item>
-                    <MinusCircleOutlined
-                      onClick={() => {
-                        remove(job.name);
-                      }}
-                    />
-                  </Space>
-                ))}
-                <Form.Item>
-                  <Button
-                    type="dashed"
-                    onClick={() => {
-                      add();
-                    }}
-                  >
-                    <PlusOutlined /> Add Job
-                  </Button>
-                </Form.Item>
-              </div>
-            );
-          }}
-        </Form.List>
-      </>
-    );
-  };
-
-const ProjectForm = () => {
+const ProjectUpdate = () => {
     const [messageApi, contextHolder] = message.useMessage();
     const [isLoading, setLoading] = useState(false);
-    const [useStandardCI, setUseStandardCI] = useState(true);
-    const [inventories, setInventories] = useState(null);
-    const [inventoriesMap, setInventoriesMap] = useState(null);
+    const { projectId } = useParams();
+    const [project, setProject] = useState(null);
+    const { projectService, inventoryService } = useService();
+    const { Title } = Typography;
     const [type, setType] = useState(null);
     const [disabledCheckbox, setDisabledCheckbox] = useState(false);
     const [form] = Form.useForm();
     const { Option } = Select;
-    const { Title } = Typography;
+    const [useStandardCI, setUseStandardCI] = useState(true);
     const navigate = useNavigate();
-    const { projectService, inventoryService } = useService();
+    const [inventoriesMap, setInventoriesMap] = useState(null);
+    const [inventories, setInventories] = useState(null);
+
+    const showErrorMessage = (err) => {
+        messageApi.open({
+          type: 'error',
+          content: err,
+        });
+    };
+
+    const onCancel = () =>{
+        navigate(-1);
+    }
 
     useEffect(() => {
         if (type === 'Khác') {
@@ -191,21 +73,41 @@ const ProjectForm = () => {
         getInventoryList();
     }, [])
 
-    const showErrorMessage = (err) => {
-        messageApi.open({
-          type: 'error',
-          content: err,
-        });
-    };
-    const onCancel = () =>{
-        navigate(-1);
+    useEffect(() => {
+        const getProject = async () => {
+            try {
+                setLoading(true);
+                const project = await projectService.getProjectById(projectId);
+                console.log({project})
+                setProject({...project, inventory: project.inventory.name});
+                setUseStandardCI(project.use_standard_ci)
+            } catch (err) {
+                console.log(err);
+                showErrorMessage('Không lấy được thông tin project');
+            } finally {
+                setLoading(false);
+            }
+        }
+        getProject();
+    }, []);
+
+    const handleChangeType = (value) => {
+        setType(value);
     }
 
-    const createNewProject = async (project) => {
+    const onChangeUseStandardCI = (event) => {
+        setUseStandardCI(event.target.checked);
+    }
+
+    const handleChangeInventory = (value) => {
+        console.log(value);
+    }
+
+    const updateProject = async (project) => {
         try {
             setLoading(true);
             console.log({project});
-            await projectService.createProject({...project, use_standard_ci: useStandardCI});
+            await projectService.updateProject({...project, use_standard_ci: useStandardCI});
             navigate(-1);
         } catch (err) {
             console.log(err);
@@ -215,27 +117,17 @@ const ProjectForm = () => {
     }
 
     const onFinish = async (values) => {
-        await createNewProject({...values, inventory: inventoriesMap.get(values.inventory)});
+        await updateProject({...values, inventory: inventoriesMap.get(values.inventory), id: projectId});
     }
 
-    const handleChangeInventory = (value) => {
-        console.log(value);
-    }
-
-    const onChangeUseStandardCI = (event) => {
-        setUseStandardCI(event.target.checked);
-    }
-    const handleChangeType = (value) => {
-        setType(value);
-    }
     return (
-        <Spin tip="Loading" size="large" spinning={isLoading}>
+        !!project ? (<Spin tip="Loading" size="large" spinning={isLoading}>
             <div className='content' style={{width: '95%', paddingTop: '16px'}}>
                 {contextHolder}
-                <Title level={2}>Thêm mới project</Title>
+                <Title level={2}>Chỉnh sửa project</Title>
                 <Form
                     {...formLayout}
-                    initialValues={{stages: STANDARD_PIPELINE, use_standard_ci: true}}
+                    initialValues={project}
                     form={form}
                     name="control-hooks"
                     onFinish={onFinish}
@@ -335,8 +227,8 @@ const ProjectForm = () => {
                     </Row>
                 </Form>
             </div>
-        </Spin>
+        </Spin>) : null
     );
 }
 
-export default ProjectForm;
+export default ProjectUpdate;

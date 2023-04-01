@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { message, Spin, Typography } from 'antd';
+import { message, Spin, Typography, Button } from 'antd';
 import { useParams } from 'react-router-dom';
 import { STANDARD_PIPELINE, PipelineVisualize } from './ProjectForm';
 import { PipelineTable } from '../pipeline/index';
 import { useService } from '../../context/ServiceContext';
+import { useNavigate } from 'react-router-dom';
 
 
 const ProjectDetail = () => {
@@ -14,6 +15,7 @@ const ProjectDetail = () => {
     const { projectId } = useParams();
     const { Title, Link } = Typography;
     const { projectService } = useService();
+    const navigate = useNavigate();
 
     const showErrorMessage = (err) => {
         messageApi.open({
@@ -57,10 +59,13 @@ const ProjectDetail = () => {
                 {contextHolder}
                 <div style={{paddingBottom: '32px'}}>
                     <Link href={project.repo_url}><Title>{project.name}</Title></Link>
+                    <div style={{display: 'flex', float: 'right', padding: '16px 16px 16px 0px'}}>
+                        <Button type="primary" size='large' onClick={() => navigate("update")}>Chỉnh sửa</Button>
+                    </div>
                     <br></br>
                     <div style={{paddingLeft: '24px'}}>
-                    <Title level={5}>{ `Inventory: ${project.inventory.name}`}</Title>
-                    <Title level={5}>{`Sử dụng Pipeline mặc định: ${project.use_standard_ci ? 'yes' : 'no'}`}</Title>
+                        <Title level={5}>{ `Inventory: ${project.inventory.name}`}</Title>
+                        <Title level={5}>{`Sử dụng Pipeline mặc định: ${project.use_standard_ci ? 'yes' : 'no'}`}</Title>
                     <br></br>
                     <Title level={4}>Pipeline</Title>
                     {

@@ -6,6 +6,7 @@ import ProjectDetail from '../pages/project/ProjectDetail';
 import ProjectTable from '../pages/project';
 import Pipeline from '../pages/pipeline';
 import PipelineDetail from '../pages/pipeline/PipelineDetail';
+import ProjectUpdate from '../pages/project/ProjectUpdate';
 import { Routes, Route } from 'react-router-dom';
 
 const PageContent = () => {
@@ -30,7 +31,10 @@ const PageContent = () => {
               </Route>
               <Route path='/projects'>
                 <Route index  element={<ProjectTable />} />
-                <Route exact path=':projectId' element={<ProjectDetail />} />
+                <Route path=':projectId'>
+                  <Route index  element={<ProjectDetail />} />
+                  <Route exact path='update' element={<ProjectUpdate />} />
+                </Route>
                 <Route exact path='new-project' element={<ProjectForm />} />
               </Route>
             </Routes>

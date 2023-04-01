@@ -3,6 +3,8 @@ const Ansible = require('node-ansible');
 const Pipeline = require('../models/pipeline');
 const ansibleQueue = new Queue('execute ansible-playbook');
 const fs = require('fs/promises');
+const Host = require('../models/host');
+const Inventory = require('../models/inventory');
 
 const typeDirMap = {
     JS: {
@@ -16,23 +18,23 @@ const typeDirMap = {
 }
 
 const runPipeline = async (pipeline, project) => {
-    console.log('-----------------------');
-    console.log(pipeline);
     var playbook;
     if (project.type === 'Khác') {
     playbook = new Ansible.Playbook()
         .inventory(`${typeDirMap.Other.inventory_dir}${project.inventory}.txt`)
         .playbook(typeDirMap.Other.playbook_dir)
-        .variables({ use_standard_ci: project.use_standard_ci, project_id: project._id,  git_commit_head: pipeline.head_commit.id, log_dir: `/home/teko/anneal/logs/${pipeline._id}.json`});
+        .variables({ use_standard_ci: project.use_standard_ci, project_id: project._id,  git_commit_head: pipeline.head_commit.id, log_dir: `/home/teko/anneal/logs/${pipeline._id}.json`, host_name: getRandomHost(project.inventory)});
     }
     if (project.type === 'JS') {
+    const host_name = await getRandomHost(project.inventory);
+    console.log('----------------------');
+    console.log({host_name});
     playbook = new Ansible.Playbook()
         .inventory(`${typeDirMap.JS.inventory_dir}${project.inventory}.txt`)
         .playbook(typeDirMap.JS.playbook_dir)
-        .variables({ use_standard_ci: project.use_standard_ci, project_id: project._id,  git_commit_head: pipeline.head_commit.id, log_dir: `/home/teko/anneal/logs/${pipeline._id}.json`});
+        .variables({ use_standard_ci: project.use_standard_ci, project_id: project._id,  git_commit_head: pipeline.head_commit.id, log_dir: `/home/teko/anneal/logs/${pipeline._id}.json`, host_name: host_name});
     }    
 
-    console.log(playbook);
     var promise = playbook.exec();
     promise.then(async function(successResult) {
         console.log(successResult);
@@ -63,6 +65,23 @@ const getResultPipeline = async (pipelineId) => {
     }
 }
 
+const getRandomHost = async (inventoryId) => {
+    try {
+        const inventory = await Inventory.findById(inventoryId);
+        const hosts = await Host.find({_id: {
+            $in: inventory.hosts
+        }});
+        const host = hosts[getRandomInt(hosts.length)];
+        return host.name;
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+const getRandomInt= (max) => {
+    return Math.floor(Math.random() * max);
+  }
+
 ansibleQueue.process(async (job, done) => {
     try {
         const { pipeline, project } = job.data;
@@ -70,7 +89,6 @@ ansibleQueue.process(async (job, done) => {
         done();
     } catch (err) {
         done(new Error('error when execute ansible'));
-        // throw new Error('some unexpected error');
     }
 });
 

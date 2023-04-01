@@ -20,19 +20,20 @@ const ProjectTable = () => {
         });
     };
 
-    useEffect(() => {
-        const getProjectList = async () => {
-            try {
-                setLoading(true);
-                const projectList = await projectService.getProjects();
-                setProjects(projectList.map((project) => { return {...project, inventory: project.inventory.name, use_standard_ci: project.use_standard_ci ? 'yes' : 'no' };}));
-            } catch (err) {
-                console.log(err);
-                showErrorMessage('Không lấy được thông tin project');
-            } finally {
-                setLoading(false);
-            }
+    const getProjectList = async () => {
+        try {
+            setLoading(true);
+            const projectList = await projectService.getProjects();
+            setProjects(projectList.map((project) => { return {...project, inventory: project.inventory.name, use_standard_ci: project.use_standard_ci ? 'yes' : 'no' };}));
+        } catch (err) {
+            console.log(err);
+            showErrorMessage('Không lấy được thông tin project');
+        } finally {
+            setLoading(false);
         }
+    }
+
+    useEffect(() => {
         getProjectList();
     }, []);
 
@@ -40,6 +41,7 @@ const ProjectTable = () => {
         try {
             setLoading(true);
             await projectService.deleteProject(id);
+            await getProjectList();
         } catch(err) {
             console.log(err);
             showErrorMessage('Có lỗi xảy ra, Vui lòng thử lại')
@@ -79,7 +81,6 @@ const ProjectTable = () => {
                     <Column title="" dataIndex="action" key="action" render={(_, record) => (
                         <div style={{display: 'flex', gap: '12px', justifyContent: 'center'}}>
                             <Link to={`${record._id}`}><CiCircleTwoTone style={{ fontSize: '24px'}} /></Link>
-                            {/* <Button type="primary" icon={<DownloadOutlined />} size={size} /> */}
                             <DeleteTwoTone onClick={() => showConfirmDeleteProject(record)} style={{ fontSize: '24px'}} twoToneColor="#eb2f96" />
                         </div>
                     )} />

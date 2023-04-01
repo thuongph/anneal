@@ -12,29 +12,35 @@
         chdir: "{{ local_dir }}"
         cmd: "{{ item.1.cmd }}"
       loop: "{{ stages|subelements('jobs') }}"
+      run_once: true
       register: echo
       when: use_standard_ci
   always:
     - name: record fail
       become: no
       delegate_to: localhost
+      run_once: true
       copy:
         content: "{{ echo }}"
         dest: "{{ log_dir }}"
 
 - name: execute custom pipeline
   block:
-    - name:
+    - name: loop stage
+      run_once: true
       ansible.builtin.shell:
         chdir: "{{ local_dir }}"
         cmd: "{{ item.1.cmd }}"
       loop: "{{ custom_stages|subelements('jobs') }}"
+      run_once: true
       register: echo
       when: not use_standard_ci
   always:
     - name: record fail
       become: no
       delegate_to: localhost
+      run_once: true
       copy:
         content: "{{ echo }}"
         dest: "{{ log_dir }}"
+      when: not use_standard_ci

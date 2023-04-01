@@ -21,7 +21,7 @@ pipeline_router.route('/')
       }, (err) => next(err))
       .catch((err) => next(err));
   })
-  .post(authenticate.verifyUser, (req, res, next) => {
+  .post((req, res, next) => {
     // check whether project is valid
     Project.findOne({repo_url: req.body.repository.html_url})
       .then((project) => {
@@ -34,7 +34,7 @@ pipeline_router.route('/')
                   res.setHeader('Content-Type', 'application/json');
                   res.json(pipeline);
                   // add pipeline queue
-                  ansibleQueue.add({pipeline: pipeline, project: project})
+                  ansibleQueue.add({pipeline: pipeline, project: project});
               }, (err) => next(err))
               .catch((err) => next(err));
           } else {
