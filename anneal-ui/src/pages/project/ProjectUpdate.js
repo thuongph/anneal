@@ -3,16 +3,12 @@ import { message, Spin, Button, Form, Input, Select, Typography, Checkbox, Row, 
 import { useParams } from 'react-router-dom';
 import { useService } from '../../context/ServiceContext';
 import { useNavigate } from 'react-router-dom';
-import { JobForm, PipelineVisualize, STANDARD_PIPELINE, TYPE } from './ProjectForm';
+import { JobForm, TYPE } from './ProjectForm';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 
 const formLayout = {
     labelCol: { span: 8 },
     wrapperCol: { span: 16 },
-};
-
-const tailLayout = {
-    wrapperCol: { offset: 8, span: 16 },
 };
 
 const ProjectUpdate = () => {
@@ -22,11 +18,8 @@ const ProjectUpdate = () => {
     const [project, setProject] = useState(null);
     const { projectService, inventoryService } = useService();
     const { Title } = Typography;
-    const [type, setType] = useState(null);
-    const [disabledCheckbox, setDisabledCheckbox] = useState(false);
     const [form] = Form.useForm();
     const { Option } = Select;
-    const [useStandardCI, setUseStandardCI] = useState(true);
     const navigate = useNavigate();
     const [inventoriesMap, setInventoriesMap] = useState(null);
     const [inventories, setInventories] = useState(null);
@@ -41,16 +34,6 @@ const ProjectUpdate = () => {
     const onCancel = () =>{
         navigate(-1);
     }
-
-    useEffect(() => {
-        if (type === 'Khác') {
-            setUseStandardCI(false);
-            setDisabledCheckbox(true);
-        }
-        if (type === 'JS') {
-            setDisabledCheckbox(false);
-        }
-    }, [type])
 
     useEffect(() => {
         const getInventoryList = async () => {
@@ -80,7 +63,6 @@ const ProjectUpdate = () => {
                 const project = await projectService.getProjectById(projectId);
                 console.log({project})
                 setProject({...project, inventory: project.inventory.name});
-                setUseStandardCI(project.use_standard_ci)
             } catch (err) {
                 console.log(err);
                 showErrorMessage('Không lấy được thông tin project');
@@ -92,11 +74,7 @@ const ProjectUpdate = () => {
     }, []);
 
     const handleChangeType = (value) => {
-        setType(value);
-    }
-
-    const onChangeUseStandardCI = (event) => {
-        setUseStandardCI(event.target.checked);
+        console.log(value);
     }
 
     const handleChangeInventory = (value) => {
@@ -107,7 +85,7 @@ const ProjectUpdate = () => {
         try {
             setLoading(true);
             console.log({project});
-            await projectService.updateProject({...project, use_standard_ci: useStandardCI});
+            await projectService.updateProject({...project});
             navigate(-1);
         } catch (err) {
             console.log(err);
@@ -154,7 +132,7 @@ const ProjectUpdate = () => {
                             <Form.Item name="repo_url" label="Repo" rules={[{ required: true }]}>
                                 <Input />
                             </Form.Item>
-                            <Form.Item name="type" label="Type" rules={[{ required: true }]}>
+                            <Form.Item name="stack" label="Stack" rules={[{ required: true }]}>
                                 <Select
                                     style={{ width: '100%' }}
                                     placeholder="Chọn Type"
@@ -166,12 +144,9 @@ const ProjectUpdate = () => {
                                     ))}
                                 </Select>
                             </Form.Item>
-                            <Form.Item {...tailLayout} name="use_standard_ci">
-                                <Checkbox checked={useStandardCI} disabled={disabledCheckbox} onChange={onChangeUseStandardCI}>Sử dụng pipeline mẫu</Checkbox>
-                            </Form.Item>
                         </Col>
                         <Col span={2}></Col>
-                        {!useStandardCI && (<Col span={14}>
+                        <Col span={14}>
                             {<Form.List name="stages">
                                 {(fields, { add, remove }) => {
                                     return (
@@ -214,9 +189,8 @@ const ProjectUpdate = () => {
                                     );
                                 }}
                             </Form.List>}
-                        </Col>)}
+                        </Col>
                     </Row>
-                    {useStandardCI && <PipelineVisualize pipeline={STANDARD_PIPELINE} />}
                     <Row style={{justifyContent: 'flex-end', columnGap: '16px', marginRight: '96px', marginTop: '32px'}}>
                         <Button size='large' key="back" onClick={onCancel}>
                         Hủy

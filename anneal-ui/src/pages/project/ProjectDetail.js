@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { message, Spin, Typography, Button } from 'antd';
 import { useParams } from 'react-router-dom';
-import { STANDARD_PIPELINE, PipelineVisualize } from './ProjectForm';
+import { PipelineVisualize } from './ProjectForm';
 import { PipelineTable } from '../pipeline/index';
 import { useService } from '../../context/ServiceContext';
 import { useNavigate } from 'react-router-dom';
@@ -13,7 +13,7 @@ const ProjectDetail = () => {
     const [project, setProject] = useState(null);
     const [pipelines, setPipelines] = useState(null);
     const { projectId } = useParams();
-    const { Title, Link } = Typography;
+    const { Title, Link, Text } = Typography;
     const { projectService } = useService();
     const navigate = useNavigate();
 
@@ -63,21 +63,14 @@ const ProjectDetail = () => {
                         <Button type="primary" size='large' onClick={() => navigate("update")}>Chỉnh sửa</Button>
                     </div>
                     <br></br>
-                    <div style={{paddingLeft: '24px'}}>
-                        <Title level={5}>{ `Inventory: ${project.inventory.name}`}</Title>
-                        <Title level={5}>{`Sử dụng Pipeline mặc định: ${project.use_standard_ci ? 'yes' : 'no'}`}</Title>
+                    <Text> Stack: {project.stack} </Text>
                     <br></br>
                     <Title level={4}>Pipeline</Title>
                     {
-                        project.use_standard_ci ? (
-                            <PipelineVisualize pipeline={STANDARD_PIPELINE} />
-                        ) : (
-                            project.stages.length ? (
-                                <PipelineVisualize pipeline={project.stages} />
-                            ) : null
-                        )
+                        project.stages.length ? (
+                            <PipelineVisualize pipeline={project.stages} />
+                        ) : null
                     }
-                    </div>
                 </div>
                 <br></br>
                 {

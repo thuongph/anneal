@@ -1,0 +1,15 @@
+---
+- name: run pipeline
+  hosts: '{{ host_name }}'
+  vars_files:
+    - vars/{{ project_id }}.yaml
+  become: true
+  roles:
+    - role: ansible-role-git
+    - role: ansible-role-nodejs
+      when: stack == 'nodejs'
+    - role: ansible-role-java
+      when: stack == 'java'
+    - role: ansible-role-maven
+      when: stack == 'java'
+    - role: execute-ci-template

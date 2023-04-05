@@ -24,7 +24,7 @@ const ProjectTable = () => {
         try {
             setLoading(true);
             const projectList = await projectService.getProjects();
-            setProjects(projectList.map((project) => { return {...project, inventory: project.inventory.name, use_standard_ci: project.use_standard_ci ? 'yes' : 'no' };}));
+            setProjects(projectList.map((project) => { return {...project, inventory: project.inventory.name };}));
         } catch (err) {
             console.log(err);
             showErrorMessage('Không lấy được thông tin project');
@@ -70,14 +70,13 @@ const ProjectTable = () => {
                     <Button type="primary" size='large' onClick={() => navigate("new-project")}>Thêm project mới</Button>
                 </div>
                 <Table dataSource={projects}>
-                    <Column title="Tên" dataIndex="name" key="name" render={(_, record) => (
+                    <Column title="Dự án" dataIndex="name" key="name" render={(_, record) => (
                         <Space size="middle">
                             <a href={record.repo_url}>{record.name}</a>
                         </Space>
                     )} />
                     <Column title="Inventory" dataIndex="inventory" key="inventory" />
-                    <Column title="stack" dataIndex="type" key="type" />
-                    <Column title="Sử dụng CI/CD mặc định" dataIndex="use_standard_ci" key="use_standard_ci" />
+                    <Column title="Stack" dataIndex="stack" key="stack" />
                     <Column title="" dataIndex="action" key="action" render={(_, record) => (
                         <div style={{display: 'flex', gap: '12px', justifyContent: 'center'}}>
                             <Link to={`${record._id}`}><CiCircleTwoTone style={{ fontSize: '24px'}} /></Link>

@@ -9,36 +9,7 @@ const formLayout = {
     wrapperCol: { span: 16 },
 };
 
-const tailLayout = {
-    wrapperCol: { offset: 8, span: 16 },
-};
-
-export const STANDARD_PIPELINE = [
-    {
-        name: 'install dependencies',
-        jobs: [
-            {
-                name: 'install',
-                command: 'npm install',
-            }
-        ]
-    },
-    {
-        name: 'unit test',
-        jobs: [
-            {
-                name: 'lint',
-                command: 'npm eslint'
-            },
-            {
-                name: 'test',
-                command: 'npm run test'
-            }
-        ]
-    }
-]
-
-export const TYPE = ['JS', 'Khác'];
+export const TYPE = ['Nodejs', 'Java', 'Khác'];
 
 const style = {
     background: '#fff',
@@ -135,7 +106,7 @@ export const JobForm = props => {
                       add();
                     }}
                   >
-                    <PlusOutlined /> Add Job
+                    <PlusOutlined /> Thêm job mới
                   </Button>
                 </Form.Item>
               </div>
@@ -149,26 +120,13 @@ export const JobForm = props => {
 const ProjectForm = () => {
     const [messageApi, contextHolder] = message.useMessage();
     const [isLoading, setLoading] = useState(false);
-    const [useStandardCI, setUseStandardCI] = useState(true);
     const [inventories, setInventories] = useState(null);
     const [inventoriesMap, setInventoriesMap] = useState(null);
-    const [type, setType] = useState(null);
-    const [disabledCheckbox, setDisabledCheckbox] = useState(false);
     const [form] = Form.useForm();
     const { Option } = Select;
     const { Title } = Typography;
     const navigate = useNavigate();
     const { projectService, inventoryService } = useService();
-
-    useEffect(() => {
-        if (type === 'Khác') {
-            setUseStandardCI(false);
-            setDisabledCheckbox(true);
-        }
-        if (type === 'JS') {
-            setDisabledCheckbox(false);
-        }
-    }, [type])
 
     useEffect(() => {
         const getInventoryList = async () => {
@@ -205,7 +163,7 @@ const ProjectForm = () => {
         try {
             setLoading(true);
             console.log({project});
-            await projectService.createProject({...project, use_standard_ci: useStandardCI});
+            await projectService.createProject({...project});
             navigate(-1);
         } catch (err) {
             console.log(err);
@@ -222,11 +180,8 @@ const ProjectForm = () => {
         console.log(value);
     }
 
-    const onChangeUseStandardCI = (event) => {
-        setUseStandardCI(event.target.checked);
-    }
     const handleChangeType = (value) => {
-        setType(value);
+        console.log(value);
     }
     return (
         <Spin tip="Loading" size="large" spinning={isLoading}>
@@ -235,7 +190,6 @@ const ProjectForm = () => {
                 <Title level={2}>Thêm mới project</Title>
                 <Form
                     {...formLayout}
-                    initialValues={{stages: STANDARD_PIPELINE, use_standard_ci: true}}
                     form={form}
                     name="control-hooks"
                     onFinish={onFinish}
@@ -262,7 +216,7 @@ const ProjectForm = () => {
                             <Form.Item name="repo_url" label="Repo" rules={[{ required: true }]}>
                                 <Input />
                             </Form.Item>
-                            <Form.Item name="type" label="Type" rules={[{ required: true }]}>
+                            <Form.Item name="stack" label="Type" rules={[{ required: true }]}>
                                 <Select
                                     style={{ width: '100%' }}
                                     placeholder="Chọn Type"
@@ -274,12 +228,9 @@ const ProjectForm = () => {
                                     ))}
                                 </Select>
                             </Form.Item>
-                            <Form.Item {...tailLayout} name="use_standard_ci">
-                                <Checkbox checked={useStandardCI} disabled={disabledCheckbox} onChange={onChangeUseStandardCI}>Sử dụng pipeline mẫu</Checkbox>
-                            </Form.Item>
                         </Col>
                         <Col span={2}></Col>
-                        {!useStandardCI && (<Col span={14}>
+                        <Col span={14}>
                             {<Form.List name="stages">
                                 {(fields, { add, remove }) => {
                                     return (
@@ -316,15 +267,14 @@ const ProjectForm = () => {
                                             onClick={() => { add(); }}
                                             block
                                         >
-                                            <PlusOutlined /> Add Stage
+                                            <PlusOutlined /> Thêm stage mới
                                         </Button>
                                         </>
                                     );
                                 }}
                             </Form.List>}
-                        </Col>)}
+                        </Col>
                     </Row>
-                    {useStandardCI && <PipelineVisualize pipeline={STANDARD_PIPELINE} />}
                     <Row style={{justifyContent: 'flex-end', columnGap: '16px', marginRight: '96px', marginTop: '32px'}}>
                         <Button size='large' key="back" onClick={onCancel}>
                         Hủy
