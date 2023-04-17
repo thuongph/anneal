@@ -65,6 +65,8 @@ const ProjectDetail = () => {
                     <br></br>
                     <Text> Stack: {project.stack} </Text>
                     <br></br>
+                    <Text> Group host: {project.inventory.name} </Text>
+                    <br></br>
                     <Title level={4}>Pipeline</Title>
                     {
                         project.stages.length ? (

@@ -23,6 +23,12 @@ const getUserInfoFromLS = () => {
     }
 }
 
+export const logout = () => {
+    localStorage.removeItem(USER_NAME_LS_KEY);
+    localStorage.removeItem(ACCESS_TOKEN_LS_KEY);
+    window.location.reload(true);
+}
+
 export const Login = (props) => {
     const { setLoading, setUser } = props;
     const navigate = useNavigate();

@@ -26,7 +26,12 @@ pipeline_router.route('/')
     Project.findOne({repo_url: req.body.repository.html_url})
       .then((project) => {
           if (project != null) {
-            const newPipeline = {project: project._id, commits: req.body.commits, head_commit: req.body.head_commit, sender: req.body.sender, status: 'pending'};
+            const newPipeline = {
+              project: project._id,
+              commits: req.body.commits,
+              head_commit: req.body.head_commit,
+              sender: req.body.sender, status: 'pending'
+            };
             // create new pipeline
             Pipeline.create(newPipeline)
               .then((pipeline) => {

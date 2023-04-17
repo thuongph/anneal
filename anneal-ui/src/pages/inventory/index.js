@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Table, message, Spin, Button, Form, Input, Modal, Select, Tag } from 'antd';
 import { useService } from '../../context/ServiceContext';
+import { DeleteTwoTone } from '@ant-design/icons';
 
 const formLayout = {
     labelCol: { span: 4 },
@@ -31,7 +32,8 @@ const Inventory = () => {
     const [form] = Form.useForm();
     const { Column } = Table;
     const { Option } = Select;
-    const { hostService, inventoryService } = useService()
+    const { hostService, inventoryService } = useService();
+    const { confirm } = Modal;
 
     const [hostMap, setHostMap] = useState(null);
 
@@ -39,6 +41,43 @@ const Inventory = () => {
         messageApi.open({
           type: 'error',
           content: err,
+        });
+    };
+
+    const getInventoryList = async () => {
+        try {
+            setLoading(true);
+            const inventories = await inventoryService.getInventories();
+            setInventories(displayInventories(inventories, 'name', '_id'));
+        } catch (err) {
+            console.log(err);
+            showErrorMessage('Không lấy được thông tin inventories');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const deleteInventory = async (id) => {
+        try {
+            setLoading(true);
+            await inventoryService.deleteInventory(id);
+            await getInventoryList();
+        } catch (err) {
+            console.log('----------------------- error when delete inventory');
+            console.log({ err });
+        } finally {
+            setLoading(false);
+        }
+    };
+    const showConfirmDeleteInventory = (inventory) => {
+        confirm({
+            title: `Bạn chắc chắn muốn xóa group host ${inventory.name}? Các project sử dụng group host này sẽ bị inactive!`,
+            onOk() {
+                deleteInventory(inventory._id)
+            },
+            onCancel() {
+              console.log('Cancel');
+            },
         });
     };
     const createNewInventory = async (inventory) => {
@@ -62,18 +101,6 @@ const Inventory = () => {
     const closeModal = () => setOpenAddForm(false);
     
     useEffect(() => {
-        const getInventoryList = async () => {
-            try {
-                setLoading(true);
-                const inventories = await inventoryService.getInventories();
-                setInventories(displayInventories(inventories, 'name', '_id'));
-            } catch (err) {
-                console.log(err);
-                showErrorMessage('Không lấy được thông tin inventories');
-            } finally {
-                setLoading(false);
-            }
-        }
         const getHostList = async () => {
             try {
                 setLoading(true);
@@ -117,7 +144,12 @@ const Inventory = () => {
                             ))}
                             </>
                         )}
-                        />
+                    />
+                    <Column title="" dataIndex="action" key="action" render={(_, record) => (
+                        <div style={{display: 'flex', gap: '12px', justifyContent: 'center'}}>
+                            <DeleteTwoTone onClick={() => showConfirmDeleteInventory(record)} style={{ fontSize: '24px'}} twoToneColor="#eb2f96" />
+                        </div>
+                    )} />
                 </Table>
             </div>
             <Modal

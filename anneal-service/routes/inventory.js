@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const authenticate = require('./authenticate');
 const Inventory = require('../models/inventory');
 const Host = require('../models/host');
+const Project = require('../models/project');
 
 var inventory_router = express.Router();
 
@@ -87,9 +88,14 @@ inventory_router.route('/:inventoryId')
     .delete(authenticate.verifyUser, (req, res, next) => {
         Inventory.findByIdAndRemove(req.params.inventoryId)
             .then((resp) => {
-                res.statusCode = 200;
-                res.setHeader('Content-Type', 'application/json');
-                res.json(resp);
+                Project.updateMany({inventory: resp._id}, { $set: { "active" : false }}, )
+                    .then((projects) => {
+                        console.log('---------------------------- impacted projects', projects);
+                        res.statusCode = 200;
+                        res.setHeader('Content-Type', 'application/json');
+                        res.json(resp);
+                    }, err => next(err))
+                    .catch((err) => {console.log('----------------------- delete inventory error', err)})
             }, (err) => next(err))
             .catch((err) => next(err));
     });

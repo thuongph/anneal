@@ -9,14 +9,6 @@ const job = new Schema({
     command: {
         type: String,
         required: true,
-    },
-    tags: {
-        type: [String],
-        required: false,
-    },
-    status: {
-        type: String,
-        required: false,
     }
 }, {
     timestamps: true
@@ -58,6 +50,11 @@ const project = new Schema({
     stages: {
         type: [stage],
         required: false,
+    },
+    active: {
+        type: Boolean,
+        required: true,
+        default: true,
     }
 }, {
     timestamps: true

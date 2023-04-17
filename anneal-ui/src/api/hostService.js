@@ -12,19 +12,9 @@ export class HostService {
         return hosts;
     }
     
-    getHostById = async (hostId) => {
-        const host = await this.hostApi.get(`${this._endpoint}/${hostId}`);
-        return host;
-    }
-    
     createHost = async (host) => {
         const newHost = await this.hostApi.post(this._endpoint, host);
         return newHost;
-    }
-    
-    updateHost = async (host) => {
-        const updatedHost = await this.hostApi.put(`${this._endpoint}/${host.id}`, host);
-        return updatedHost;
     }
     
     deleteHost = async (hostId) => {

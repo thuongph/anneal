@@ -1,4 +1,3 @@
-import Home from '../pages/homepage';
 import Host from '../pages/host';
 import Inventory from '../pages/inventory';
 import ProjectForm from '../pages/project/ProjectForm';
@@ -15,7 +14,7 @@ const PageContent = () => {
             <Routes>
               <Route
                   path='/'
-                  element={<Home />}
+                  element={<Pipeline />}
               />
               <Route
                   path='/hosts'

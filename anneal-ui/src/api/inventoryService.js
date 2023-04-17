@@ -13,19 +13,9 @@ export class InventoryService {
         return inventories;
     }
     
-    getInventoryById = async (inventoryId) => {
-        const inventory = await this.inventoryApi.get(`${this._endpoint}/${inventoryId}`);
-        return inventory;
-    }
-    
     createInventory = async (inventory) => {
         const res = await this.inventoryApi.post(this._endpoint, inventory);
         return res;
-    }
-    
-    updateInventory = async (inventory) => {
-        const updatedHost = await this.inventoryApi.put(`${this._endpoint}/${inventory.id}`, inventory);
-        return updatedHost;
     }
     
     deleteInventory = async (inventoryId) => {
