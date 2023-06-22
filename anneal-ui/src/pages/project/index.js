@@ -24,7 +24,7 @@ const ProjectTable = () => {
         try {
             setLoading(true);
             const projectList = await projectService.getProjects();
-            setProjects(projectList.map((project) => { return {...project, inventory: project.inventory.name };}));
+            setProjects(projectList.map((project) => { return {...project, inventory: project.inventory?.name };}));
         } catch (err) {
             console.log(err);
             showErrorMessage('Không lấy được thông tin project');
@@ -77,6 +77,11 @@ const ProjectTable = () => {
                     )} />
                     <Column title="Inventory" dataIndex="inventory" key="inventory" />
                     <Column title="Stack" dataIndex="stack" key="stack" />
+                    <Column title="" dataIndex="active" render={(_, record) => (
+                        <Space size="middle">
+                            {record.active ? "active" : "inactive"}
+                        </Space>
+                    )} />
                     <Column title="" dataIndex="action" key="action" render={(_, record) => (
                         <div style={{display: 'flex', gap: '12px', justifyContent: 'center'}}>
                             <Link to={`${record._id}`}><CiCircleTwoTone style={{ fontSize: '24px'}} /></Link>

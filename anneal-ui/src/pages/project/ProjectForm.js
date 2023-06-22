@@ -216,10 +216,10 @@ const ProjectForm = () => {
                             <Form.Item name="repo_url" label="Repo" rules={[{ required: true }]}>
                                 <Input />
                             </Form.Item>
-                            <Form.Item name="stack" label="Type" rules={[{ required: true }]}>
+                            <Form.Item name="stack" label="Stack" rules={[{ required: true }]}>
                                 <Select
                                     style={{ width: '100%' }}
-                                    placeholder="Chọn Type"
+                                    placeholder="Chọn stack"
                                     onChange={handleChangeType}
                                     optionLabelProp="label"
                                 >

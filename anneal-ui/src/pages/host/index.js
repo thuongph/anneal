@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table, message, Spin, Button, Form, Input, Modal } from 'antd';
+import { DeleteTwoTone } from '@ant-design/icons';
 import { useService } from '../../context/ServiceContext';
 
 const columns = [
@@ -22,6 +23,15 @@ const columns = [
         title: 'Khóa',
         dataIndex: 'private_key_file',
         key: 'private_key_file',
+    },
+    {
+        title: '',
+        key: 'delete_action',
+        render: (_, record) => (
+            <div style={{display: 'flex', gap: '12px', justifyContent: 'center'}}>
+                <DeleteTwoTone onClick={() => console.log(record)} style={{ fontSize: '24px'}} twoToneColor="#eb2f96" />
+            </div>
+          ),
     },  
 ];
 

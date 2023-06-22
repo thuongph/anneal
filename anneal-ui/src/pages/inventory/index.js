@@ -73,7 +73,7 @@ const Inventory = () => {
         confirm({
             title: `Bạn chắc chắn muốn xóa group host ${inventory.name}? Các project sử dụng group host này sẽ bị inactive!`,
             onOk() {
-                deleteInventory(inventory._id)
+                deleteInventory(inventory.key)
             },
             onCancel() {
               console.log('Cancel');

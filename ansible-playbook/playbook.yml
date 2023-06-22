@@ -7,9 +7,9 @@
   roles:
     - role: ansible-role-git
     - role: ansible-role-nodejs
-      when: stack == 'nodejs'
+      when: stack == 'Nodejs'
     - role: ansible-role-java
-      when: stack == 'java'
+      when: stack == 'Java'
     - role: ansible-role-maven
-      when: stack == 'java'
-    - role: execute-ci-template
+      when: stack == 'Java'
+    - role: execute-pipeline

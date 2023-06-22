@@ -62,8 +62,11 @@ project_router.route('/:projectId')
       res.setHeader('Content-Type', 'application/json');
       res.json({"error": "stages is invalid"});
     } else {
+      const updatedProject = {...req.body, active: true};
+      console.log('-------------- update project');
+      console.log(updatedProject);
       Project.findByIdAndUpdate(req.params.projectId, {
-        $set: req.body
+        $set: updatedProject
       }, { new: true })
         .then((project) => {
             res.statusCode = 200;

@@ -11,6 +11,7 @@
       ansible.builtin.shell:
         chdir: "{{ local_dir }}"
         cmd: "{{ item.1.cmd }}"
+        executable: /bin/bash
       loop: "{{ stages|subelements('jobs') }}"
       run_once: true
       register: echo

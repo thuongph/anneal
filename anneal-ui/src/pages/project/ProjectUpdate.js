@@ -62,7 +62,7 @@ const ProjectUpdate = () => {
                 setLoading(true);
                 const project = await projectService.getProjectById(projectId);
                 console.log({project})
-                setProject({...project, inventory: project.inventory.name});
+                setProject({...project, inventory: project.inventory?.name});
             } catch (err) {
                 console.log(err);
                 showErrorMessage('Không lấy được thông tin project');

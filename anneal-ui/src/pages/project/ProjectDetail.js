@@ -63,9 +63,11 @@ const ProjectDetail = () => {
                         <Button type="primary" size='large' onClick={() => navigate("update")}>Chỉnh sửa</Button>
                     </div>
                     <br></br>
+                    <Text>{project.active ? "active" : "inactive"} </Text>
+                    <br></br>
                     <Text> Stack: {project.stack} </Text>
                     <br></br>
-                    <Text> Group host: {project.inventory.name} </Text>
+                    <Text> Group host: {project.inventory?.name} </Text>
                     <br></br>
                     <Title level={4}>Pipeline</Title>
                     {

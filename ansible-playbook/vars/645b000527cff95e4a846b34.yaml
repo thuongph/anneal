@@ -1,17 +1,17 @@
 repo_url: https://github.com/thuongph/sample-nodejs-with-tests
-local_dir: ~/testproject
+local_dir: ~/nodeproject
 stack: Nodejs
 
 stages:
-  - name: 'install dependencies'
+  - name: 'install'
     jobs:
-      - name: 'clean install'
+      - name: 'install dep'
         cmd: 'npm ci --ignore-scripts'
   - name: 'lint'
     jobs:
-      - name: 'check coding style'
+      - name: 'lint'
         cmd: 'npm run lint'
-  - name: 'unit test'
+  - name: 'test'
     jobs:
-      - name: 'test the code'
+      - name: 'unit tests'
         cmd: 'npm test'

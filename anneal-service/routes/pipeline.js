@@ -25,7 +25,7 @@ pipeline_router.route('/')
     // check whether project is valid
     Project.findOne({repo_url: req.body.repository.html_url})
       .then((project) => {
-          if (project != null) {
+          if (project != null && project.active == true) {
             const newPipeline = {
               project: project._id,
               commits: req.body.commits,
